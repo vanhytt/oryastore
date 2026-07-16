@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { products } from "../../src/data/products";
 import { Star, ArrowUpDown, Filter, ChevronRight, Home, Eye, ShoppingCart, Info } from "lucide-react";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
 import { useCart } from "@/src/lib/cartContext";
+import { getActiveProducts } from "@/src/lib/dbService";
+import type { Product } from "@/src/lib/dbService";
 
 // Product image placeholder component
 function ProductImagePlaceholder({ id, name }: { id: number; name: string }) {
@@ -31,9 +32,26 @@ function ProductImagePlaceholder({ id, name }: { id: number; name: string }) {
 }
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("default");
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await getActiveProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to load products", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   // Listen to url search parameters to sync category filter selection
   React.useEffect(() => {
@@ -78,8 +96,8 @@ export default function ProductsPage() {
     }
   }, []);
 
-  // Helper to extract numeric value from price string e.g. "350.000đ" -> 350000
-  const getNumericPrice = (priceStr: string) => {
+  const getNumericPrice = (priceStr: string | undefined) => {
+    if (!priceStr) return 0;
     return parseInt(priceStr.replace(/\./g, "").replace("đ", ""), 10);
   };
 
@@ -87,9 +105,11 @@ export default function ProductsPage() {
   const processedProducts = useMemo(() => {
     let result = [...products];
 
-    // Filter by Category
     if (selectedCategory !== "all") {
-      result = result.filter((p) => p.category === selectedCategory);
+      result = result.filter((p) => {
+        const categoryName = p.category === "mom" ? "Mẹ bầu" : p.category === "baby" ? "Trẻ em" : p.category;
+        return categoryName === selectedCategory;
+      });
     }
 
     // Sort by criteria
@@ -109,6 +129,13 @@ export default function ProductsPage() {
     { id: "Mẹ bầu", label: "Chăm sóc Mẹ bầu" },
     { id: "Trẻ em", label: "Chăm sóc Bé yêu" },
   ];
+
+  const formatPrice = (value?: number) =>
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    }).format(value || 0);
 
   return (
     <>
@@ -196,8 +223,11 @@ export default function ProductsPage() {
           Hiển thị <span className="text-[#5D8D4A]">{processedProducts.length}</span> sản phẩm
         </div>
 
-        {/* Products Grid */}
-        {processedProducts.length === 0 ? (
+        {loading ? (
+          <div className="bg-white rounded-2xl border border-[#5D8D4A]/10 py-20 text-center text-[#5D8D4A] font-semibold">
+            Đang tải sản phẩm từ Supabase...
+          </div>
+        ) : processedProducts.length === 0 ? (
           <div className="bg-white rounded-2xl border border-dashed border-[#5D8D4A]/20 py-20 text-center">
             <Info size={48} className="mx-auto text-gray-300 mb-4" />
             <h3 className="text-lg font-bold text-[#404041] mb-2">Không tìm thấy sản phẩm</h3>
@@ -233,7 +263,15 @@ export default function ProductsPage() {
                         -{discountPercent}%
                       </span>
                     )}
-                    <ProductImagePlaceholder id={product.id} name={product.name} />
+                    {product.primaryImage || product.images?.[0] || product.image_url || product.image ? (
+                      <img
+                        src={product.primaryImage || product.images?.[0] || product.image_url || product.image}
+                        alt={product.name}
+                        className="w-full h-64 object-contain bg-white"
+                      />
+                    ) : (
+                      <ProductImagePlaceholder id={Number(product.id)} name={product.name} />
+                    )}
                     
                     {/* Hover Quick View Link */}
                     <div className="absolute inset-0 bg-[#5D8D4A]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
@@ -251,7 +289,7 @@ export default function ProductsPage() {
                   <div className="p-6 flex flex-col flex-1">
                     {/* Category */}
                     <span className="text-[#5D8D4A] font-bold text-xs uppercase tracking-wider mb-1.5 inline-block">
-                      {product.category}
+                      {product.category === "mom" ? "Mẹ bầu" : product.category === "baby" ? "Em bé" : product.category}
                     </span>
 
                     {/* Name */}
@@ -273,22 +311,22 @@ export default function ProductsPage() {
                           />
                         ))}
                       </div>
-                      <span className="text-xs text-[#404041]/60 font-medium">({product.rating})</span>
+                      <span className="text-xs text-[#404041]/60 font-medium">({product.rating?.toFixed(1) || "0.0"})</span>
                     </div>
 
                     {/* Description */}
                     <p className="text-[#404041]/70 text-xs md:text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
-                      {product.description}
+                      {product.shortDescription || product.description}
                     </p>
 
                     {/* Prices */}
                     <div className="flex items-baseline gap-2.5 mb-5 border-t border-gray-100 pt-4">
                       <span className="text-[#ED9717] font-extrabold text-lg md:text-xl">
-                        {product.price}
+                        {formatPrice(product.priceValue || Number(product.price.replace(/\D/g, "")) || 0).replace("₫", "đ")}
                       </span>
                       {product.originalPrice && (
                         <span className="text-gray-400 text-xs md:text-sm line-through">
-                          {product.originalPrice}
+                          {product.originalPriceValue ? formatPrice(product.originalPriceValue).replace("₫", "đ") : product.originalPrice}
                         </span>
                       )}
                     </div>
@@ -303,13 +341,13 @@ export default function ProductsPage() {
                       </Link>
                       <button
                         onClick={() => {
-                          const priceVal = parseInt(product.price.replace(/\D/g, "")) || 0;
                           addToCart({
-                            id: product.id,
+                            id: typeof product.id === "number" ? product.id : Number(product.id) || 0,
                             name: product.name,
-                            price: product.price,
-                            priceValue: priceVal,
-                            image: "", // Since we use gradient placeholder in UI
+                            price: formatPrice(product.priceValue || Number(product.price.replace(/\D/g, "")) || 0).replace("₫", "đ"),
+                            priceValue: product.priceValue || Number(product.price.replace(/\D/g, "")) || 0,
+                            image: product.primaryImage || product.images?.[0] || product.image_url || product.image || undefined,
+                            category: product.category,
                           });
                         }}
                         className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs md:text-sm font-bold bg-[#ED9717] text-white rounded-xl py-2.5 hover:bg-[#d4880f] transition-all min-h-[40px] cursor-pointer"

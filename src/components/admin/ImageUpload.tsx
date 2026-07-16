@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, Loader2 } from "lucide-react";
+import { uploadImage } from "../../lib/adminApi";
 
 interface ImageUploadProps {
   value: string;
@@ -12,26 +13,41 @@ interface ImageUploadProps {
 export default function ImageUpload({ value, onChange, label }: ImageUploadProps) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
-      alert("Vui lòng tải lên tệp tin ảnh (JPG, PNG, WEBP,...)");
+      setUploadError("Vui lòng tải lên tệp tin ảnh (JPG, PNG, WEBP,...)");
       return;
     }
     // Limit to 5MB
     if (file.size > 5 * 1024 * 1024) {
-      alert("Kích thước ảnh quá lớn! Vui lòng chọn ảnh dưới 5MB.");
+      setUploadError("Kích thước ảnh quá lớn! Vui lòng chọn ảnh dưới 5MB.");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target?.result) {
-        onChange(e.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+    setUploadError(null);
+    setIsUploading(true);
+
+    try {
+      // Thử upload lên Supabase Storage qua API Route
+      const url = await uploadImage(file);
+      onChange(url);
+    } catch {
+      // Nếu Supabase chưa cấu hình hoặc lỗi, fallback sang Base64
+      console.warn("Upload lên Supabase thất bại, dùng Base64 fallback");
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          onChange(e.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const onDrag = (e: React.DragEvent) => {
@@ -61,6 +77,7 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
 
   const removeImage = () => {
     onChange("");
+    setUploadError(null);
   };
 
   return (
@@ -96,10 +113,14 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-700 truncate">
-                  {value.startsWith("data:") ? "Ảnh đã tải lên (Base64)" : "Đường dẫn liên kết bên ngoài"}
+                  {value.startsWith("data:")
+                    ? "Ảnh tải lên (Base64 – chưa kết nối Supabase)"
+                    : "Ảnh đã tải lên Supabase Storage"}
                 </p>
                 <p className="text-[10px] text-gray-400 truncate max-w-full">
-                  {value.startsWith("data:") ? `Kích thước: ~${Math.round((value.length * 3) / 4 / 1024)} KB` : value}
+                  {value.startsWith("data:")
+                    ? `Kích thước: ~${Math.round((value.length * 3) / 4 / 1024)} KB`
+                    : value}
                 </p>
               </div>
               <button
@@ -117,11 +138,13 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
               onDragOver={onDrag}
               onDragLeave={onDrag}
               onDrop={onDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition-all ${
-                isDragActive
-                  ? "border-[#5D8D4A] bg-[#5D8D4A]/5"
-                  : "border-gray-300 hover:border-[#5D8D4A] hover:bg-gray-50/50"
+              onClick={() => !isUploading && fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-lg p-5 flex flex-col items-center justify-center transition-all ${
+                isUploading
+                  ? "border-[#5D8D4A] bg-[#5D8D4A]/5 cursor-wait"
+                  : isDragActive
+                    ? "border-[#5D8D4A] bg-[#5D8D4A]/5 cursor-pointer"
+                    : "border-gray-300 hover:border-[#5D8D4A] hover:bg-gray-50/50 cursor-pointer"
               }`}
             >
               <input
@@ -131,15 +154,39 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
                 onChange={onFileChange}
                 className="hidden"
               />
-              <UploadCloud
-                size={32}
-                className={`mb-2 transition-colors ${isDragActive ? "text-[#5D8D4A]" : "text-gray-400 group-hover:text-gray-600"}`}
-              />
-              <p className="text-xs text-gray-600 font-medium text-center">
-                Kéo thả file ảnh vào đây, hoặc <span className="text-[#5D8D4A] font-bold hover:underline">nhấp để chọn</span>
-              </p>
-              <p className="text-[10px] text-gray-400 mt-1">Hỗ trợ JPG, PNG, WEBP, GIF (Tối đa 5MB)</p>
+              {isUploading ? (
+                <>
+                  <Loader2
+                    size={32}
+                    className="mb-2 text-[#5D8D4A] animate-spin"
+                  />
+                  <p className="text-xs text-[#5D8D4A] font-semibold">
+                    Đang tải ảnh lên Supabase Storage...
+                  </p>
+                </>
+              ) : (
+                <>
+                  <UploadCloud
+                    size={32}
+                    className={`mb-2 transition-colors ${isDragActive ? "text-[#5D8D4A]" : "text-gray-400 group-hover:text-gray-600"}`}
+                  />
+                  <p className="text-xs text-gray-600 font-medium text-center">
+                    Kéo thả file ảnh vào đây, hoặc{" "}
+                    <span className="text-[#5D8D4A] font-bold hover:underline">
+                      nhấp để chọn
+                    </span>
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Hỗ trợ JPG, PNG, WEBP, GIF (Tối đa 5MB)
+                  </p>
+                </>
+              )}
             </div>
+          )}
+
+          {/* Error message */}
+          {uploadError && (
+            <p className="text-xs text-red-600 mt-1">{uploadError}</p>
           )}
         </div>
       )}

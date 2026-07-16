@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { products } from "@/src/data/products";
+import { getActiveProducts, getProductBySlug } from "@/src/lib/dbService";
 import ProductDetail from "@/src/components/product/ProductDetail";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
@@ -11,14 +11,26 @@ interface PageProps {
 
 // Generate static params for Next.js build pre-rendering
 export async function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id.toString(),
+  const allProducts = await getActiveProducts();
+  return allProducts.map((product) => ({
+    id: product.slug || product.id.toString(),
   }));
 }
 
 export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
-  const product = products.find((p) => p.id === parseInt(id));
+
+  // Try to find product by slug first
+  let product = await getProductBySlug(id);
+
+  // Fallback: if slug didn't match, try fetching all and matching by numeric ID
+  const allProducts = await getActiveProducts();
+  if (!product) {
+    const numericId = parseInt(id);
+    if (!isNaN(numericId)) {
+      product = allProducts.find((p) => p.id === numericId) || null;
+    }
+  }
 
   if (!product) {
     notFound();
@@ -28,7 +40,7 @@ export default async function ProductPage({ params }: PageProps) {
     <>
       <Header />
       <main className="flex-1 bg-white">
-        <ProductDetail product={product} allProducts={products} />
+        <ProductDetail product={product} allProducts={allProducts} />
       </main>
       <Footer />
     </>

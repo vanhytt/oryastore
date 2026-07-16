@@ -167,12 +167,19 @@
     transform: translateX(0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(-33.3333%);
   }
 }
 
 .animate-slide-left {
-  animation: slide-left 20s linear infinite;
+  animation: slide-left 24s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-left {
+    animation: none;
+  }
 }
 
 /* Smooth transitions */

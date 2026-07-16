@@ -14,6 +14,13 @@ export interface Product {
   description: string;
   shortDescription: string;
   image?: string;
+  image_url?: string;
+  images?: string[];
+  primaryImage?: string;
+  slug?: string;
+  brand?: string;
+  is_active?: boolean;
+  isActive?: boolean;
   colors?: string[];
   benefits?: string[];
   ingredients?: string[];
@@ -188,6 +195,14 @@ export async function getProducts(): Promise<Product[]> {
         description: p.description || "",
         shortDescription: p.short_description || "",
         image: p.image || "",
+        image_url: p.image_url || p.image || "",
+        images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
+        primaryImage: p.primary_image || p.image || "",
+        slug: p.slug || "",
+        brand: p.brand || "",
+        is_active: p.is_active,
+        isActive: p.is_active,
+        colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
         benefits: p.benefits || [],
         ingredients: p.ingredients || [],
         usage: p.usage || []
@@ -220,7 +235,9 @@ export async function createProduct(prod: Omit<Product, "id">): Promise<Product>
           reviews_count: prod.reviewsCount,
           description: prod.description,
           short_description: prod.shortDescription,
-          image: prod.image,
+          image: prod.primaryImage || prod.images?.[0] || prod.image || null,
+          images: prod.images || (prod.image ? [prod.image] : []),
+          primary_image: prod.primaryImage || prod.images?.[0] || prod.image || null,
           benefits: prod.benefits,
           ingredients: prod.ingredients,
           usage: prod.usage
@@ -264,7 +281,9 @@ export async function updateProduct(id: string | number, prod: Omit<Product, "id
         reviews_count: prod.reviewsCount,
         description: prod.description,
         short_description: prod.shortDescription,
-        image: prod.image,
+        image: prod.primaryImage || prod.images?.[0] || prod.image || null,
+        images: prod.images || (prod.image ? [prod.image] : []),
+        primary_image: prod.primaryImage || prod.images?.[0] || prod.image || null,
         benefits: prod.benefits,
         ingredients: prod.ingredients,
         usage: prod.usage
@@ -495,4 +514,103 @@ export async function deletePartner(id: string | number): Promise<boolean> {
   const filtered = list.filter((item) => item.id.toString() !== id.toString());
   saveLocalData("orya_partners", filtered);
   return true;
+}
+
+export async function getActiveProducts(): Promise<Product[]> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      return data.map((p) => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        price: p.price,
+        priceValue: p.price_value || 0,
+        originalPrice: p.original_price || "",
+        originalPriceValue: p.original_price_value || 0,
+        badge: p.badge || "",
+        rating: p.rating || 5,
+        reviewsCount: p.reviews_count || 0,
+        description: p.description || "",
+        shortDescription: p.short_description || "",
+        image: p.image || "",
+        image_url: p.image_url || p.image || "",
+        images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
+        primaryImage: p.primary_image || p.image || "",
+        slug: p.slug || "",
+        brand: p.brand || "",
+        is_active: p.is_active,
+        isActive: p.is_active,
+        colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+        benefits: p.benefits || [],
+        ingredients: p.ingredients || [],
+        usage: p.usage || []
+      }));
+    }
+    console.error("Supabase error getting active products, falling back to LocalStorage:", error);
+  }
+  const all = await getProducts();
+  return all.filter((p) => p.is_active !== false && p.isActive !== false);
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  if (isSupabaseConfigured && supabase) {
+    // 1. Try by slug
+    let { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    // 2. If not found and slug is UUID format, try by id
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(slug);
+    if (!data && !error && isUuid) {
+      const res = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", slug)
+        .maybeSingle();
+      if (!res.error && res.data) {
+        data = res.data;
+      }
+    }
+
+    if (data) {
+      return {
+        id: data.id,
+        name: data.name,
+        category: data.category,
+        price: data.price,
+        priceValue: data.price_value || 0,
+        originalPrice: data.original_price || "",
+        originalPriceValue: data.original_price_value || 0,
+        badge: data.badge || "",
+        rating: data.rating || 5,
+        reviewsCount: data.reviews_count || 0,
+        description: data.description || "",
+        shortDescription: data.short_description || "",
+        image: data.image || "",
+        image_url: data.image_url || data.image || "",
+        images: Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []),
+        primaryImage: data.primary_image || data.image || "",
+        slug: data.slug || "",
+        brand: data.brand || "",
+        is_active: data.is_active,
+        isActive: data.is_active,
+        colors: data.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+        benefits: data.benefits || [],
+        ingredients: data.ingredients || [],
+        usage: data.usage || []
+      };
+    }
+  }
+
+  // Fallback to local data
+  const list = await getProducts();
+  return list.find((p) => p.slug === slug || p.id.toString() === slug) || null;
 }

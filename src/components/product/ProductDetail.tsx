@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Star, 
@@ -15,7 +15,7 @@ import {
   ArrowLeft,
   Heart
 } from "lucide-react";
-import { Product } from "@/src/data/products";
+import { Product } from "@/src/lib/dbService";
 import Button from "@/src/components/ui/Button";
 import { useCart } from "@/src/lib/cartContext";
 
@@ -30,6 +30,24 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"benefits" | "usage">("benefits");
+
+  const galleryImages = useMemo(() => {
+    const sources = [
+      product.primaryImage,
+      ...(product.images || []),
+      product.image_url,
+      product.image,
+    ].filter((image): image is string => Boolean(image));
+
+    return Array.from(new Set(sources));
+  }, [product.primaryImage, product.images, product.image_url, product.image]);
+
+  const selectedImage = galleryImages[currentImageIndex] || product.primaryImage || product.images?.[0] || product.image_url || product.image;
+  const hasGallery = galleryImages.length > 0;
+
+  React.useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [product.id]);
 
   // Get related products (exclude current product)
   const relatedProducts = allProducts.filter((p) => p.id !== product.id).slice(0, 4);
@@ -46,22 +64,22 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
 
   const handleAddToCart = () => {
     addToCart({
-      id: product.id,
+      id: typeof product.id === 'number' ? product.id : parseInt(product.id) || 0,
       name: product.name,
       price: product.price,
       priceValue: product.priceValue,
-      image: "",
+      image: selectedImage || undefined,
       category: product.category,
     }, quantity);
   };
 
   const handleBuyNow = () => {
     addToCart({
-      id: product.id,
+      id: typeof product.id === 'number' ? product.id : parseInt(product.id) || 0,
       name: product.name,
       price: product.price,
       priceValue: product.priceValue,
-      image: "",
+      image: selectedImage || undefined,
       category: product.category,
     }, quantity);
     setIsCartOpen(true);
@@ -87,22 +105,31 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
           {/* LEFT COLUMN: Product Images */}
           <div className="lg:col-span-6 flex flex-col">
             {/* Main Image Container */}
-            <div className={`w-full h-[380px] md:h-[480px] bg-gradient-to-b ${product.colors[currentImageIndex]} rounded-2xl flex items-center justify-center relative shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-500`}>
+            <div className={`w-full h-[380px] md:h-[480px] bg-gradient-to-b ${product.colors?.[currentImageIndex] || "from-[#5D8D4A] to-[#4A7A38]"} rounded-2xl flex items-center justify-center relative shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-500`}>
               {product.badge && (
                 <span className="absolute top-4 left-4 z-10 bg-[#E59822] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wide">
                   {product.badge}
                 </span>
               )}
               
-              <div className="text-center text-white p-8">
-                <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full mx-auto mb-6 flex items-center justify-center border border-white/30 shadow-inner">
-                  <span className="text-white font-bold text-3xl tracking-widest">ORYA</span>
+              {hasGallery ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={selectedImage}
+                  alt={product.name}
+                  className="max-h-[85%] max-w-[85%] object-contain transition-transform duration-300 hover:scale-105 z-10"
+                />
+              ) : (
+                <div className="text-center text-white p-8 z-10">
+                  <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full mx-auto mb-6 flex items-center justify-center border border-white/30 shadow-inner">
+                    <span className="text-white font-bold text-3xl tracking-widest">ORYA</span>
+                  </div>
+                  <h2 className="font-bold text-2xl md:text-3xl drop-shadow-md max-w-sm mx-auto leading-tight">{product.name}</h2>
+                  <p className="text-white/70 text-xs mt-3 bg-black/10 inline-block px-3 py-1 rounded-full uppercase tracking-wider">
+                    Mặt hàng an toàn • Góc {currentImageIndex + 1}
+                  </p>
                 </div>
-                <h2 className="font-bold text-2xl md:text-3xl drop-shadow-md max-w-sm mx-auto leading-tight">{product.name}</h2>
-                <p className="text-white/70 text-xs mt-3 bg-black/10 inline-block px-3 py-1 rounded-full uppercase tracking-wider">
-                  Mặt hàng an toàn • Góc {currentImageIndex + 1}
-                </p>
-              </div>
+              )}
 
               {/* Decorative light elements */}
               <div className="absolute w-64 h-64 bg-white/10 rounded-full -top-12 -right-12 blur-2xl"></div>
@@ -110,25 +137,28 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
             </div>
 
             {/* Thumbnails row */}
-            <div className="grid grid-cols-3 gap-4 mt-5">
-              {product.colors.map((colorGrad, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentImageIndex(idx)}
-                  className={`h-24 md:h-28 bg-gradient-to-b ${colorGrad} rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden relative ${
-                    currentImageIndex === idx 
-                      ? "border-[#5D8D4A] ring-4 ring-[#5D8D4A]/10 scale-[1.03]" 
-                      : "border-transparent opacity-75 hover:opacity-100"
-                  }`}
-                >
-                  <div className="w-full h-full flex items-center justify-center bg-black/5">
-                    <span className="text-white text-[10px] uppercase font-bold bg-black/30 px-2 py-0.5 rounded-full">
-                      Góc {idx + 1}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            {hasGallery && (
+              <div className="grid grid-cols-4 gap-3 mt-5">
+                {galleryImages.map((image, idx) => (
+                  <button
+                    key={`${image}-${idx}`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`h-20 md:h-24 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden relative bg-white ${
+                      currentImageIndex === idx 
+                        ? "border-[#5D8D4A] ring-4 ring-[#5D8D4A]/10 scale-[1.03]" 
+                        : "border-gray-200 opacity-80 hover:opacity-100"
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={image}
+                      alt={`${product.name} ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN: Product Info & Actions */}
@@ -267,7 +297,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                     <CheckCircle2 size={20} /> Công dụng nổi bật
                   </h4>
                   <ul className="space-y-3.5">
-                    {product.benefits.map((benefit, i) => (
+                  {(product.benefits || []).map((benefit, i) => (
                       <li key={i} className="flex gap-3 text-[#404041] text-sm md:text-base leading-relaxed">
                         <span className="w-5 h-5 bg-[#EFFFE9] border border-[#5D8D4A]/20 rounded-full flex items-center justify-center text-[#5D8D4A] text-xs font-bold flex-shrink-0 mt-0.5">✓</span>
                         <span>{benefit}</span>
@@ -281,7 +311,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                     <Leaf size={20} /> Thành phần lành tính
                   </h4>
                   <ul className="space-y-3.5">
-                    {product.ingredients.map((ingredient, i) => (
+                  {(product.ingredients || []).map((ingredient, i) => (
                       <li key={i} className="flex gap-3 text-[#404041] text-sm md:text-base leading-relaxed">
                         {ingredient.startsWith("Sản phẩm 5 KHÔNG:") ? (
                           <div className="flex gap-3 bg-[#FFF5F5] border border-red-100 rounded-xl p-3.5 w-full mt-2">
@@ -309,7 +339,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                   <RotateCcw size={20} /> Hướng dẫn các bước sử dụng an toàn
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {product.usage.map((step, i) => (
+                  {(product.usage || []).map((step, i) => (
                     <div key={i} className="flex gap-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
                       <span className="w-8 h-8 rounded-full bg-[#5D8D4A] text-white flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-sm">
                         {i + 1}
@@ -390,35 +420,46 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((product) => (
+            {relatedProducts.map((p) => (
               <div 
-                key={product.id} 
-                onClick={() => router.push(`/products/${product.id}`)}
+                key={p.id} 
+                onClick={() => router.push(`/san-pham/${p.slug || p.id}`)}
                 className="bg-white rounded-xl group transition-all duration-300 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden flex flex-col cursor-pointer"
               >
                 {/* Product Image Placeholder */}
                 <div className="relative overflow-hidden bg-[#F8F8F8]">
-                  {product.badge && (
+                  {p.badge && (
                     <span className="absolute top-3 left-3 z-10 bg-[#ED9717] text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
-                      {product.badge}
+                      {p.badge}
                     </span>
                   )}
-                  {/* Image Placeholder using first gradient */}
-                  <div className={`w-full h-52 bg-gradient-to-b ${product.colors[0]} flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]`}>
-                    <div className="text-center text-white px-4">
-                      <div className="w-10 h-10 bg-white/20 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/20">
-                        <span className="text-white font-bold text-sm">O</span>
-                      </div>
-                      <p className="text-xs font-bold leading-tight line-clamp-1">{product.name}</p>
+                  {/* Image or Placeholder using first gradient */}
+                  {p.primaryImage || p.images?.[0] || p.image_url || p.image ? (
+                    <div className="w-full h-52 bg-white flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={p.primaryImage || p.images?.[0] || p.image_url || p.image}
+                        alt={p.name}
+                        className="max-h-[90%] max-w-[90%] object-contain"
+                      />
                     </div>
-                  </div>
+                  ) : (
+                    <div className={`w-full h-52 bg-gradient-to-b ${p.colors?.[0] || "from-[#5D8D4A] to-[#4A7A38]"} flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]`}>
+                      <div className="text-center text-white px-4">
+                        <div className="w-10 h-10 bg-white/20 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/20">
+                          <span className="text-white font-bold text-sm">O</span>
+                        </div>
+                        <p className="text-xs font-bold leading-tight line-clamp-1">{p.name}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Product Info */}
                 <div className="p-5 flex flex-col flex-1">
-                  <span className="text-xs font-semibold text-gray-400 uppercase mb-1">{product.category}</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase mb-1">{p.category}</span>
                   <h4 className="text-[#5D8D4A] font-bold text-base leading-snug mb-2 line-clamp-2 group-hover:text-[#6CA356] transition-colors">
-                    {product.name}
+                    {p.name}
                   </h4>
                   
                   {/* Review stars */}
@@ -426,15 +467,15 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} size={12} className="fill-[#E59822] text-[#E59822]" />
                     ))}
-                    <span className="text-[10px] text-gray-500 font-semibold ml-1">{product.rating}</span>
+                    <span className="text-[10px] text-gray-500 font-semibold ml-1">{p.rating}</span>
                   </div>
 
                   {/* Price */}
                   <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-50">
-                    <span className="text-[#E59822] font-bold text-base">{product.price}</span>
-                    {product.originalPrice && (
+                    <span className="text-[#E59822] font-bold text-base">{p.price}</span>
+                    {p.originalPrice && (
                       <span className="text-gray-400 text-xs line-through">
-                        {product.originalPrice}
+                        {p.originalPrice}
                       </span>
                     )}
                   </div>
