@@ -167,17 +167,18 @@
     transform: translateX(0);
   }
   to {
-    transform: translateX(-33.3333%);
+    transform: translateX(-50%);
   }
 }
 
-.animate-slide-left {
-  animation: slide-left 24s linear infinite;
+.marquee-track {
+  animation: slide-left 30s linear infinite;
+  animation-play-state: running;
   will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-slide-left {
+  .marquee-track {
     animation: none;
   }
 }
