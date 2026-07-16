@@ -54,6 +54,8 @@ export default function AdminLoginPage() {
       if (signInError) {
         if (signInError.message.includes("Invalid login credentials")) {
           setError("Sai tài khoản hoặc mật khẩu.");
+        } else if (signInError.message.toLowerCase().includes("email not confirmed")) {
+          setError("Tài khoản chưa được xác thực email. Vui lòng xác nhận email hoặc bật lại yêu cầu xác nhận trong Supabase Auth settings.");
         } else {
           setError(signInError.message);
         }
