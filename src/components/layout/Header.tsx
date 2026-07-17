@@ -16,7 +16,6 @@ const navLinks = [
   },
   { label: "Câu chuyện thương hiệu", href: "/thuong-hieu" },
   { label: "Tin tức", href: "/tin-tuc" },
-  { label: "Liên hệ", href: "/lien-he" },
 ];
 
 export default function Header() {

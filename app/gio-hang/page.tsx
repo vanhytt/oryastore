@@ -21,7 +21,7 @@ import {
   MapPin,
   FileText
 } from "lucide-react";
-import { useCart } from "@/src/lib/cartContext";
+import { DEFAULT_CART_IMAGE, useCart } from "@/src/lib/cartContext";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
 
@@ -60,7 +60,13 @@ export default function CartPage() {
   } | null>(null);
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString("vi-VN") + "đ";
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    })
+      .format(price)
+      .replace("₫", "đ");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -100,24 +106,86 @@ export default function CartPage() {
 
     setIsSubmitting(true);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // ── Lấy URL của Google Apps Script Web App từ biến môi trường
+      // Cần khai báo trong .env.local:
+      //   NEXT_PUBLIC_GAS_URL=https://script.google.com/macros/s/.../exec
+      const GAS_URL = process.env.NEXT_PUBLIC_GAS_URL;
 
-    const orderId = "ORYA-" + Math.floor(100000 + Math.random() * 900000);
-    
-    setCreatedOrder({
-      id: orderId,
-      name: formData.name,
-      phone: formData.phone,
-      address: formData.address,
-      total: totalPrice,
-      items: [...cart],
-      paymentMethod: formData.paymentMethod,
-    });
+      if (!GAS_URL) {
+        throw new Error(
+          "Chưa cấu hình NEXT_PUBLIC_GAS_URL. Vui lòng thêm vào file .env.local"
+        );
+      }
 
-    setIsSubmitting(false);
-    setOrderSuccess(true);
-    clearCart();
+      // ── Chuẩn bị dữ liệu đơn hàng gửi lên Google Apps Script
+      const orderData = {
+        fullName: formData.name,
+        phone: formData.phone,
+        address: formData.address,
+        note: formData.note,
+        cartItems: cart.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        totalAmount: totalPrice,
+        orderTime: new Date().toISOString(),
+      };
+
+      // ── Gửi POST request trực tiếp lên Google Apps Script
+      // ⚠️  Dùng Content-Type: 'text/plain' để tránh CORS preflight request
+      //     (Google Apps Script không xử lý được preflight OPTIONS)
+      const response = await fetch(GAS_URL, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lỗi kết nối máy chủ: HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // ── Kiểm tra phản hồi từ Google Apps Script
+      if (data.result !== "success") {
+        throw new Error(data.message || "Không thể ghi đơn hàng vào hệ thống");
+      }
+
+      // ── Tạo mã đơn hàng để hiển thị (GAS cũng trả về orderId)
+      const orderId = data.orderId
+        ? `ORYA-${data.orderId}`
+        : `ORYA-${Date.now()}`;
+
+      // ── Cập nhật state thông tin đơn hàng đã đặt
+      setCreatedOrder({
+        id: orderId,
+        name: formData.name,
+        phone: formData.phone,
+        address: formData.address,
+        total: totalPrice,
+        items: [...cart],
+        paymentMethod: formData.paymentMethod,
+      });
+
+      // ── Xóa giỏ hàng và hiển thị trang thành công
+      clearCart();
+      setOrderSuccess(true);
+    } catch (error) {
+      console.error("Checkout submit error:", error);
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : "Đã xảy ra lỗi khi gửi đơn hàng. Vui lòng thử lại.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // If order is placed successfully
@@ -262,9 +330,13 @@ export default function CartPage() {
                   <div className="divide-y divide-gray-100 px-6">
                     {cart.map((item) => (
                       <div key={item.id} className="py-6 flex items-start gap-4">
-                        {/* Product Image Placeholder */}
-                        <div className="w-20 h-20 bg-[#EFFFE9] rounded-xl flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
-                          <span className="text-[#5D8D4A] font-extrabold text-sm">Orya</span>
+                        <div className="w-20 h-20 shrink-0 rounded-xl border border-gray-100 overflow-hidden bg-[#EFFFE9]">
+                          <img
+                            src={item.image || DEFAULT_CART_IMAGE}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
                         </div>
 
                         {/* Name and controller */}
@@ -299,9 +371,9 @@ export default function CartPage() {
 
                             {/* Prices */}
                             <div className="text-right">
-                              <span className="block text-xs text-gray-400 font-medium">Đơn giá: {formatPrice(item.priceValue)}</span>
+                              <span className="block text-xs text-gray-400 font-medium">Đơn giá: {formatPrice(item.price)}</span>
                               <span className="text-[#ED9717] font-extrabold text-sm md:text-base">
-                                {formatPrice(item.priceValue * item.quantity)}
+                                {formatPrice(item.price * item.quantity)}
                               </span>
                             </div>
                           </div>
@@ -458,12 +530,12 @@ export default function CartPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-[#ED9717] hover:bg-[#d4880f] disabled:bg-amber-300 text-white font-extrabold py-3.5 rounded-xl transition-all cursor-pointer text-center text-sm md:text-base flex items-center justify-center gap-2 mt-4 shadow-md shadow-orange-500/10"
+                    className="w-full bg-[#ED9717] hover:bg-[#d4880f] disabled:bg-amber-300 disabled:cursor-not-allowed text-white font-extrabold py-3.5 rounded-xl transition-all cursor-pointer text-center text-sm md:text-base flex items-center justify-center gap-2 mt-4 shadow-md shadow-orange-500/10"
                   >
                     {isSubmitting ? (
                       <>
                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        Đang tạo đơn hàng...
+                        Đang xử lý đơn hàng...
                       </>
                     ) : (
                       <>
@@ -472,6 +544,10 @@ export default function CartPage() {
                       </>
                     )}
                   </button>
+
+                  {errors.submit && (
+                    <p className="text-xs text-red-500 font-bold text-center">{errors.submit}</p>
+                  )}
 
                   <p className="text-[10px] text-gray-400 text-center leading-relaxed mt-2.5">
                     Bằng việc bấm xác nhận, bạn đồng ý với các chính sách bảo mật và điều khoản dịch vụ của Orya Natural.

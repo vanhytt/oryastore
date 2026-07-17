@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { X, Trash2, Minus, Plus, ShoppingBag, ArrowRight } from "lucide-react";
-import { useCart } from "@/src/lib/cartContext";
+import { DEFAULT_CART_IMAGE, useCart } from "@/src/lib/cartContext";
 import { useRouter } from "next/navigation";
 
 export default function CartDrawer() {
@@ -41,7 +41,13 @@ export default function CartDrawer() {
   if (!isCartOpen) return null;
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString("vi-VN") + "đ";
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    })
+      .format(price)
+      .replace("₫", "đ");
   };
 
   const handleCheckoutClick = () => {
@@ -100,9 +106,13 @@ export default function CartDrawer() {
                   key={item.id}
                   className="flex items-start gap-4 p-3 rounded-xl border border-gray-100 hover:border-[#5D8D4A]/20 transition-all bg-white shadow-sm"
                 >
-                  {/* Product Color/Image placeholder */}
-                  <div className="w-20 h-20 bg-[#EFFFE9] rounded-lg flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
-                    <span className="text-[#5D8D4A] font-extrabold text-sm">Orya</span>
+                  <div className="w-20 h-20 shrink-0 rounded-lg border border-gray-100 overflow-hidden bg-[#EFFFE9]">
+                    <img
+                      src={item.image || DEFAULT_CART_IMAGE}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
 
                   {/* Product details */}
@@ -110,8 +120,11 @@ export default function CartDrawer() {
                     <h4 className="text-sm font-bold text-[#404041] leading-tight truncate mb-1">
                       {item.name}
                     </h4>
-                    <p className="text-xs text-[#5D8D4A] font-medium mb-2.5">
+                    <p className="text-xs text-[#5D8D4A] font-medium mb-1.5">
                       {item.category || "Orya Natural"}
+                    </p>
+                    <p className="text-xs text-gray-500 mb-2.5">
+                      Đơn giá: {formatPrice(item.price)}
                     </p>
 
                     {/* Price and quantity controller */}
@@ -135,7 +148,7 @@ export default function CartDrawer() {
                       </div>
 
                       <span className="text-sm font-bold text-[#ED9717]">
-                        {formatPrice(item.priceValue * item.quantity)}
+                        {formatPrice(item.price * item.quantity)}
                       </span>
                     </div>
                   </div>

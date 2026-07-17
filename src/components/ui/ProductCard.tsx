@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Button from "./Button";
 import { ShoppingCart, Eye, Star } from "lucide-react";
 import { Product } from "@/src/lib/dbService";
-import { useCart } from "@/src/lib/cartContext";
+import { normalizeCartPrice, resolveCartImage, useCart } from "@/src/lib/cartContext";
 
 interface ProductCardProps {
   product: Product;
@@ -47,13 +47,15 @@ export default function ProductCard({
       onAddToCart(product);
       return;
     }
-    const priceValue = product.priceValue || parseInt(product.price.replace(/\D/g, "")) || 0;
+    const priceValue = Number(product.priceValue) || normalizeCartPrice(product.price);
     addToCart({
-      id: typeof product.id === 'number' ? product.id : parseInt(product.id) || 0,
+      id: String(product.id),
       name: product.name,
-      price: product.price,
-      priceValue: priceValue,
-      image: product.primaryImage || product.images?.[0] || product.image_url || product.image || undefined,
+      price: priceValue,
+      image: resolveCartImage(product.primaryImage || product.images?.[0] || product.image_url || product.image),
+      category: product.category,
+      brand: product.brand,
+      slug: product.slug,
     });
   };
 

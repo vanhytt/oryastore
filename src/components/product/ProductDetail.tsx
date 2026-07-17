@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Product } from "@/src/lib/dbService";
 import Button from "@/src/components/ui/Button";
-import { useCart } from "@/src/lib/cartContext";
+import { normalizeCartPrice, resolveCartImage, useCart } from "@/src/lib/cartContext";
 
 interface ProductDetailProps {
   product: Product;
@@ -64,23 +64,25 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
 
   const handleAddToCart = () => {
     addToCart({
-      id: typeof product.id === 'number' ? product.id : parseInt(product.id) || 0,
+      id: String(product.id),
       name: product.name,
-      price: product.price,
-      priceValue: product.priceValue,
-      image: selectedImage || undefined,
+      price: Number(product.priceValue) || normalizeCartPrice(product.price),
+      image: resolveCartImage(selectedImage || product.primaryImage || product.images?.[0] || product.image_url || product.image),
       category: product.category,
+      brand: product.brand,
+      slug: product.slug,
     }, quantity);
   };
 
   const handleBuyNow = () => {
     addToCart({
-      id: typeof product.id === 'number' ? product.id : parseInt(product.id) || 0,
+      id: String(product.id),
       name: product.name,
-      price: product.price,
-      priceValue: product.priceValue,
-      image: selectedImage || undefined,
+      price: Number(product.priceValue) || normalizeCartPrice(product.price),
+      image: resolveCartImage(selectedImage || product.primaryImage || product.images?.[0] || product.image_url || product.image),
       category: product.category,
+      brand: product.brand,
+      slug: product.slug,
     }, quantity);
     setIsCartOpen(true);
   };

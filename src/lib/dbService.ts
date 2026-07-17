@@ -174,41 +174,63 @@ function saveLocalData<T>(key: string, data: T[]) {
 
 /* ==================== PRODUCTS CRUD ==================== */
 
+async function withSupabaseTimeout<T>(promise: PromiseLike<T>, fallback: T, timeoutMs = 2500): Promise<T> {
+  return Promise.race([
+    promise.then((result) => result),
+    new Promise<T>((resolve) => {
+      setTimeout(() => resolve(fallback), timeoutMs);
+    }),
+  ]);
+}
+
 export async function getProducts(): Promise<Product[]> {
   if (isSupabaseConfigured && supabase) {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) {
-      return data.map((p) => ({
-        id: p.id,
-        name: p.name,
-        category: p.category,
-        price: p.price,
-        priceValue: p.price_value || 0,
-        originalPrice: p.original_price || "",
-        originalPriceValue: p.original_price_value || 0,
-        badge: p.badge || "",
-        rating: p.rating || 5,
-        reviewsCount: p.reviews_count || 0,
-        description: p.description || "",
-        shortDescription: p.short_description || "",
-        image: p.image || "",
-        image_url: p.image_url || p.image || "",
-        images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
-        primaryImage: p.primary_image || p.image || "",
-        slug: p.slug || "",
-        brand: p.brand || "",
-        is_active: p.is_active,
-        isActive: p.is_active,
-        colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
-        benefits: p.benefits || [],
-        ingredients: p.ingredients || [],
-        usage: p.usage || []
-      }));
+    try {
+      const result = await withSupabaseTimeout(
+        supabase
+          .from("products")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .then(({ data, error }) => {
+            if (error) {
+              throw error;
+            }
+            return data || [];
+          }),
+        [],
+      );
+
+      if (result.length > 0) {
+        return result.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          priceValue: p.price_value || 0,
+          originalPrice: p.original_price || "",
+          originalPriceValue: p.original_price_value || 0,
+          badge: p.badge || "",
+          rating: p.rating || 5,
+          reviewsCount: p.reviews_count || 0,
+          description: p.description || "",
+          shortDescription: p.short_description || "",
+          image: p.image || "",
+          image_url: p.image_url || p.image || "",
+          images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
+          primaryImage: p.primary_image || p.image || "",
+          slug: p.slug || "",
+          brand: p.brand || "",
+          is_active: p.is_active,
+          isActive: p.is_active,
+          colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: p.benefits || [],
+          ingredients: p.ingredients || [],
+          usage: p.usage || []
+        }));
+      }
+    } catch (error) {
+      console.error("Supabase error getting products, falling back to LocalStorage:", error);
     }
-    console.error("Supabase error getting products, falling back to LocalStorage:", error);
   }
   return getLocalData<Product>("orya_products", initialProducts);
 }
@@ -518,41 +540,53 @@ export async function deletePartner(id: string | number): Promise<boolean> {
 
 export async function getActiveProducts(): Promise<Product[]> {
   if (isSupabaseConfigured && supabase) {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
+    try {
+      const result = await withSupabaseTimeout(
+        supabase
+          .from("products")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .then(({ data, error }) => {
+            if (error) {
+              throw error;
+            }
+            return data || [];
+          }),
+        [],
+      );
 
-    if (!error && data) {
-      return data.map((p) => ({
-        id: p.id,
-        name: p.name,
-        category: p.category,
-        price: p.price,
-        priceValue: p.price_value || 0,
-        originalPrice: p.original_price || "",
-        originalPriceValue: p.original_price_value || 0,
-        badge: p.badge || "",
-        rating: p.rating || 5,
-        reviewsCount: p.reviews_count || 0,
-        description: p.description || "",
-        shortDescription: p.short_description || "",
-        image: p.image || "",
-        image_url: p.image_url || p.image || "",
-        images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
-        primaryImage: p.primary_image || p.image || "",
-        slug: p.slug || "",
-        brand: p.brand || "",
-        is_active: p.is_active,
-        isActive: p.is_active,
-        colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
-        benefits: p.benefits || [],
-        ingredients: p.ingredients || [],
-        usage: p.usage || []
-      }));
+      if (result.length > 0) {
+        return result.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          priceValue: p.price_value || 0,
+          originalPrice: p.original_price || "",
+          originalPriceValue: p.original_price_value || 0,
+          badge: p.badge || "",
+          rating: p.rating || 5,
+          reviewsCount: p.reviews_count || 0,
+          description: p.description || "",
+          shortDescription: p.short_description || "",
+          image: p.image || "",
+          image_url: p.image_url || p.image || "",
+          images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
+          primaryImage: p.primary_image || p.image || "",
+          slug: p.slug || "",
+          brand: p.brand || "",
+          is_active: p.is_active,
+          isActive: p.is_active,
+          colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: p.benefits || [],
+          ingredients: p.ingredients || [],
+          usage: p.usage || []
+        }));
+      }
+    } catch (error) {
+      console.error("Supabase error getting active products, falling back to LocalStorage:", error);
     }
-    console.error("Supabase error getting active products, falling back to LocalStorage:", error);
   }
   const all = await getProducts();
   return all.filter((p) => p.is_active !== false && p.isActive !== false);
@@ -560,57 +594,94 @@ export async function getActiveProducts(): Promise<Product[]> {
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (isSupabaseConfigured && supabase) {
-    // 1. Try by slug
-    let { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle();
-
-    // 2. If not found and slug is UUID format, try by id
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(slug);
-    if (!data && !error && isUuid) {
-      const res = await supabase
+
+    if (isUuid) {
+      const { data, error } = await supabase
         .from("products")
         .select("*")
         .eq("id", slug)
         .maybeSingle();
-      if (!res.error && res.data) {
-        data = res.data;
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          name: data.name,
+          category: data.category,
+          price: data.price,
+          priceValue: data.price_value || 0,
+          originalPrice: data.original_price || "",
+          originalPriceValue: data.original_price_value || 0,
+          badge: data.badge || "",
+          rating: data.rating || 5,
+          reviewsCount: data.reviews_count || 0,
+          description: data.description || "",
+          shortDescription: data.short_description || "",
+          image: data.image || "",
+          image_url: data.image_url || data.image || "",
+          images: Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []),
+          primaryImage: data.primary_image || data.image || "",
+          slug: data.slug || "",
+          brand: data.brand || "",
+          is_active: data.is_active,
+          isActive: data.is_active,
+          colors: data.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: data.benefits || [],
+          ingredients: data.ingredients || [],
+          usage: data.usage || []
+        };
       }
     }
 
-    if (data) {
-      return {
-        id: data.id,
-        name: data.name,
-        category: data.category,
-        price: data.price,
-        priceValue: data.price_value || 0,
-        originalPrice: data.original_price || "",
-        originalPriceValue: data.original_price_value || 0,
-        badge: data.badge || "",
-        rating: data.rating || 5,
-        reviewsCount: data.reviews_count || 0,
-        description: data.description || "",
-        shortDescription: data.short_description || "",
-        image: data.image || "",
-        image_url: data.image_url || data.image || "",
-        images: Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []),
-        primaryImage: data.primary_image || data.image || "",
-        slug: data.slug || "",
-        brand: data.brand || "",
-        is_active: data.is_active,
-        isActive: data.is_active,
-        colors: data.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
-        benefits: data.benefits || [],
-        ingredients: data.ingredients || [],
-        usage: data.usage || []
-      };
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      const fallback = data.find((product: Record<string, unknown>) => {
+        const candidate = typeof product.name === "string" ? product.name : "";
+        const normalized = candidate
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/\p{Diacritic}/gu, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+        return normalized === slug;
+      });
+
+      if (fallback) {
+        return {
+          id: fallback.id,
+          name: fallback.name,
+          category: fallback.category,
+          price: fallback.price,
+          priceValue: fallback.price_value || 0,
+          originalPrice: fallback.original_price || "",
+          originalPriceValue: fallback.original_price_value || 0,
+          badge: fallback.badge || "",
+          rating: fallback.rating || 5,
+          reviewsCount: fallback.reviews_count || 0,
+          description: fallback.description || "",
+          shortDescription: fallback.short_description || "",
+          image: fallback.image || "",
+          image_url: fallback.image_url || fallback.image || "",
+          images: Array.isArray(fallback.images) ? fallback.images : (fallback.image ? [fallback.image] : []),
+          primaryImage: fallback.primary_image || fallback.image || "",
+          slug: fallback.slug || "",
+          brand: fallback.brand || "",
+          is_active: fallback.is_active,
+          isActive: fallback.is_active,
+          colors: fallback.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: fallback.benefits || [],
+          ingredients: fallback.ingredients || [],
+          usage: fallback.usage || []
+        };
+      }
     }
   }
 
-  // Fallback to local data
   const list = await getProducts();
-  return list.find((p) => p.slug === slug || p.id.toString() === slug) || null;
+  return list.find((p) => p.id.toString() === slug || p.slug === slug) || null;
 }

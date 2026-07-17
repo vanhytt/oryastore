@@ -13,7 +13,7 @@ interface PageProps {
 export async function generateStaticParams() {
   const allProducts = await getActiveProducts();
   return allProducts.map((product) => ({
-    id: product.slug || product.id.toString(),
+    id: product.id.toString(),
   }));
 }
 
@@ -23,13 +23,10 @@ export default async function ProductPage({ params }: PageProps) {
   // Try to find product by slug first
   let product = await getProductBySlug(id);
 
-  // Fallback: if slug didn't match, try fetching all and matching by numeric ID
+  // Fallback: if slug didn't match, try fetching all and matching by string ID or slug
   const allProducts = await getActiveProducts();
   if (!product) {
-    const numericId = parseInt(id);
-    if (!isNaN(numericId)) {
-      product = allProducts.find((p) => p.id === numericId) || null;
-    }
+    product = allProducts.find((p) => p.id?.toString() === id) || null;
   }
 
   if (!product) {
