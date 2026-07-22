@@ -42,7 +42,7 @@ export default function Header() {
             className="flex items-center gap-2 text-[#ED9717] font-bold text-sm hover:text-yellow-300 transition-colors"
           >
             <Phone size={14} />
-            Hotline: 1800 1800 (Miễn phí)
+            Hotline: 0398126895
           </a>
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function Header() {
         {/* Right Actions */}
         <div className="flex items-center gap-3">
           <a
-            href="tel:18001800"
+            href="tel:0398126895"
             className="hidden md:flex items-center gap-2 bg-[#ED9717] text-white font-bold px-4 py-2 hover:bg-[#d4880f] transition-colors min-h-[44px]"
           >
             <Phone size={16} />
@@ -165,11 +165,11 @@ export default function Header() {
           ))}
           <div className="p-4">
             <a
-              href="tel:18001800"
+              href="tel:0398126895"
               className="flex items-center justify-center gap-2 bg-[#ED9717] text-white font-bold py-3 w-full hover:bg-[#d4880f] transition-colors"
             >
               <Phone size={18} />
-              Gọi đặt hàng: 1800 1800
+              Gọi đặt hàng: 0398126895
             </a>
           </div>
         </div>

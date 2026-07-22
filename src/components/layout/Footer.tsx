@@ -1,5 +1,6 @@
 import React from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
+import path from "path/win32";
 
 const productLinks = [
   { label: "Dầu rạn da mẹ bầu", href: "/" },
@@ -49,18 +50,28 @@ export default function Footer() {
             {/* Social */}
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.facebook.com/share/1Em6X2dKY5/?mibextid=wwXIfr"
                 className="w-10 h-10 bg-[#6CA356] rounded flex items-center justify-center hover:bg-white hover:text-[#5D8D4A] transition-all"
                 aria-label="Facebook"
               >
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
               </a>
               <a
-                href="#"
-                className="w-10 h-10 bg-red-500 rounded flex items-center justify-center hover:bg-white hover:text-red-500 transition-all"
-                aria-label="Youtube"
+                href="https://shopee.vn/orya_vegar?mmp_pid=an_17322500037&uls_trackid=566p7l0e012u&utm_campaign=-&utm_content=-&utm_medium=affiliates&utm_source=an_17322500037&utm_term=f9cshuj8dwzo"
+                className="w-10 h-10 bg-[#6CA356] rounded flex items-center justify-center hover:bg-white hover:text-[#5D8D4A] transition-all"
+                aria-label="Shopee"
               >
-                <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="white"/></svg>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm0 10.5c-1.1 0-2-.5-2-1.5 0-1.2 1.5-1.5 2.5-1.8 1.3-.4 2.5-.9 2.5-2.7 0-1.7-1.5-2.5-3-2.5-1.8 0-3.1 1.1-3.1 2.7h1.8c0-.6.5-1.2 1.3-1.2.7 0 1.3.4 1.3 1 0 .6-.6.9-1.8 1.3-1.4.5-2.7 1.1-2.7 2.7 0 1.8 1.4 2.8 3.2 2.8 1.8 0 3.2-.9 3.2-2.8h-1.8c0 .8-.6 1.2-1.4 1.2z" />
+                </svg>
+              </a><a
+                href="https://vt.tiktok.com/ZSXVBU9td/?page=TikTokShop"
+                className="w-10 h-10 bg-[#6CA356] rounded flex items-center justify-center hover:bg-white hover:text-[#5D8D4A] transition-all"
+                aria-label="Shopee"
+              >
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.68 6.34 6.34 0 0 0 9.35 22a6.33 6.33 0 0 0 6.33-6.33V9.05a8.16 8.16 0 0 0 4.91 1.62v-3.98a4.82 4.82 0 0 1-1-.05z" />
+                </svg>
               </a>
             </div>
           </div>
@@ -132,8 +143,7 @@ export default function Footer() {
                   className="text-[#ED9717] flex-shrink-0 mt-0.5"
                 />
                 <p className="text-blue-100 text-sm leading-6">
-                  Số 2, đường Nội khu Trung Sơn, Khu dân cư Trung Sơn, Bình
-                  Chánh, TP. HCM
+                  154 Hoàng Văn Thái, Phường Phương Liệt, Hà Nội
                 </p>
               </li>
               <li className="flex gap-3 items-center">
@@ -142,7 +152,7 @@ export default function Footer() {
                   href="tel:18001800"
                   className="text-blue-100 text-sm hover:text-[#ED9717] transition-colors"
                 >
-                  Hotline: 1800 1800 (Miễn phí)
+                  Hotline: 0398126895
                 </a>
               </li>
               <li className="flex gap-3 items-center">
@@ -151,7 +161,7 @@ export default function Footer() {
                   href="mailto:info@orya.vn"
                   className="text-green-100 text-sm hover:text-[#ED9717] transition-colors"
                 >
-                  info@orya.vn
+                  ecommerce.orya@gmail.com
                 </a>
               </li>
             </ul>
