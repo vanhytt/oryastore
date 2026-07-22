@@ -1,0 +1,1961 @@
+\n===FILE:app/page.tsx===\nimport Header from "@/src/components/layout/Header";
+import HeroBanner from "@/src/components/home/HeroBanner";
+import BrandStory from "@/src/components/home/BrandStory";
+import ProductFamily from "@/src/components/home/ProductFamily";
+import QualityCertificates from "@/src/components/home/QualityCertificates";
+import NewsSection from "@/src/components/home/NewsSection";
+import PartnerLogos from "@/src/components/home/PartnerLogos";
+import Footer from "@/src/components/layout/Footer";
+import { getActiveProducts, getNews, getPartners } from "@/src/lib/dbService";
+
+export default async function Home() {
+  const [products, news, partners] = await Promise.all([getActiveProducts(), getNews(), getPartners()]);
+
+  return (
+    <>
+      <Header />
+      <main className="flex-1">
+        <HeroBanner />
+        <BrandStory />
+        <ProductFamily products={products} />
+        <QualityCertificates />
+        <NewsSection news={news} />
+        <PartnerLogos partners={partners} />
+      </main>
+      <Footer />
+    </>
+  );
+}
+\n===FILE:app/san-pham/[id]/page.tsx===\nimport ProductPage, { generateStaticParams } from "../../products/[id]/page";
+
+export { generateStaticParams };
+export default ProductPage;\n===FILE:app/san-pham/page.tsx===\nimport ProductsPage from "../products/page";
+
+export default ProductsPage;\n===FILE:app/thuong-hieu/page.tsx===\n  "use client";
+
+import React, { useEffect, useState } from "react";
+import { 
+  Heart, 
+  ShieldCheck, 
+  Sparkles, 
+  Award, 
+  Leaf, 
+  ArrowRight,
+  CheckCircle2,
+  FileText,
+  FlameKindling,
+  Factory
+} from "lucide-react";
+import Header from "@/src/components/layout/Header";
+import Footer from "@/src/components/layout/Footer";
+
+export default function BrandStoryPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <>
+      <Header />
+      <main className="bg-[#FAF9F5] text-[#2c3527] overflow-x-hidden min-h-screen selection:bg-[#5D8D4A]/10 selection:text-[#5D8D4A]">
+        {/* Background grain noise effect */}
+        <div className="fixed inset-0 pointer-events-none opacity-[0.015] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] z-40"></div>
+
+        {/* HERO SECTION - Editorial Split */}
+        <section className="relative py-24 md:py-36 overflow-hidden">
+          <div className="max-w-[1200px] mx-auto px-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              
+              {/* Left Narrative Column */}
+              <div className={`lg:col-span-6 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-[#5D8D4A]/10 text-[#5D8D4A] text-[10px] uppercase tracking-[0.2em] font-bold mb-6">
+                  <Sparkles size={10} className="animate-pulse" />
+                  Câu Chương Thương Hiệu
+                </div>
+                
+                <h1 className="text-4xl md:text-5xl lg:text-6xl text-[#3A5B2C] font-bold leading-[1.15] tracking-tight mb-8">
+                  Khởi nguồn từ <br />
+                  <span className="italic text-[#ED9717] font-normal">tình mẫu tử</span> & <br />
+                  khoa học thảo dược
+                </h1>
+                
+                <p className="text-stone-600 text-lg md:text-xl leading-relaxed mb-6 font-light">
+                  Orya không chỉ là một thương hiệu mỹ phẩm. Orya là lời hứa thiêng liêng của những người mẹ làm khoa học, mong muốn mang lại sự vỗ về dịu lành nhất cho làn da non nớt của con trẻ và vẻ đẹp rạng rỡ của mẹ.
+                </p>
+                
+                <p className="text-stone-500 text-base md:text-md leading-relaxed mb-8">
+                  Xuất phát từ các nghiên cứu chuyên sâu về dược học thiên nhiên tại CVI Pharma, chúng tôi thấu hiểu từng tế bào da nhạy cảm cần gì để phát triển khỏe mạnh, tự nhiên mà không cần đến hóa chất nhân tạo độc hại.
+                </p>
+                
+                <div className="flex flex-wrap gap-4 items-center">
+                  <a
+                    href="/san-pham"
+                    className="group inline-flex items-center gap-3 bg-[#5D8D4A] text-white font-bold px-7 py-3.5 rounded-full hover:bg-[#4d753d] active:scale-[0.98] transition-all duration-300 shadow-[0_4px_20px_rgba(93,141,74,0.15)] min-h-[48px]"
+                  >
+                    Khám phá sản phẩm
+                    <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+                      <ArrowRight size={14} />
+                    </span>
+                  </a>
+                  
+                  <a 
+                    href="#hanh-trinh"
+                    className="inline-flex items-center text-sm font-bold text-[#5D8D4A] hover:text-[#4d753d] px-4 py-2 transition-colors duration-300"
+                  >
+                    Đọc tiếp hành trình ↓
+                  </a>
+                </div>
+              </div>
+              
+              {/* Right Photo Cascade (Z-Axis Cascade Archetype) */}
+              <div className="lg:col-span-6 relative mt-10 lg:mt-0">
+                <div className="relative w-full max-w-[500px] mx-auto aspect-[4/5]">
+                  
+                  {/* Decorative glowing orb */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#5D8D4A]/10 rounded-full blur-[80px] pointer-events-none -z-10"></div>
+                  
+                  {/* Back Image (Botanical/Natural) */}
+                  <div className={`absolute top-0 right-0 w-[65%] aspect-[3/4] rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-stone-200/50 transition-all duration-1000 delay-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${mounted ? 'translate-y-0 translate-x-0 opacity-80' : 'translate-y-8 translate-x-8 opacity-0'}`}>
+                    <img 
+                      src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" 
+                      alt="Thảo dược thiên nhiên"
+                      className="w-full h-full object-cover filter sepia-[10%] hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                  
+                  {/* Front Image (Mother & Baby) - Double Bezel Architecture */}
+                  <div className={`absolute bottom-0 left-0 w-[75%] p-2 rounded-[2.5rem] bg-stone-50 border border-stone-200/50 shadow-[0_12px_40px_rgba(36,85,143,0.1)] transition-all duration-1000 delay-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${mounted ? 'translate-y-0 translate-x-0 opacity-100' : 'translate-y-12 -translate-x-8 opacity-0'}`}>
+                    <div className="rounded-[calc(2.5rem-0.5rem)] overflow-hidden aspect-[4/5] bg-stone-100">
+                      <img 
+                        src="/about.jpg" 
+                        alt="Tình mẫu tử Orya"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                        onError={(e) => {
+                          // fallback if local file doesn't exist
+                          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80";
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Small floating badge */}
+                  <div className={`absolute top-[40%] left-[-5%] bg-white/90 backdrop-blur-md rounded-2xl border border-stone-200/60 p-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all duration-1000 delay-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${mounted ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#ED9717]/10 flex items-center justify-center text-[#ED9717]">
+                        <Heart size={18} fill="currentColor" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Cam kết từ tâm</p>
+                        <p className="text-sm text-[#3A5B2C] font-extrabold">100% Thuần Chay</p>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </section>
+
+        {/* CORE PHILOSOPHY - Asymmetrical Bento Grid */}
+        <section className="py-24 bg-white relative">
+          <div className="max-w-[1200px] mx-auto px-5">
+            
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#5D8D4A] font-bold">Triết lý hoạt động</span>
+              <h2 className="text-3xl md:text-4xl text-[#3A5B2C] font-bold mt-3">Kim chỉ nam cho mọi bước đi</h2>
+              <p className="text-stone-500 text-sm md:text-base mt-4 font-light">
+                Tại Orya, chất lượng sản phẩm không chỉ được định nghĩa bằng khoa học kiểm nghiệm, mà còn bằng chữ Tâm trọn vẹn dành cho gia đình Việt.
+              </p>
+            </div>
+
+            {/* Bento Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              
+              {/* Box 1: Sứ mệnh - Medium (col-span-6) */}
+              <div className="md:col-span-6 group p-2 rounded-[2.5rem] bg-stone-50 border border-stone-200/40 hover:border-[#5D8D4A]/30 transition-all duration-500 hover:shadow-[0_12px_32px_rgba(93,141,74,0.05)]">
+                <div className="bg-white rounded-[calc(2.5rem-0.5rem)] p-8 md:p-10 h-full flex flex-col justify-between border border-stone-100">
+                  <div>
+                    <div className="w-12 h-12 rounded-2xl bg-[#5D8D4A]/10 text-[#5D8D4A] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                      <Leaf size={22} />
+                    </div>
+                    <h3 className="text-2xl text-[#3A5B2C] font-bold mb-4">Sứ Mệnh Dịu Lành</h3>
+                    <p className="text-stone-500 text-sm md:text-base leading-relaxed font-light">
+                      Mang đến những giải pháp chăm sóc làn da tối ưu bằng thảo dược thuần khiết. Orya mong muốn bảo vệ sức khỏe làn da mẹ và bé khỏi các hóa chất độc hại ngay từ những năm tháng đầu đời, tạo dựng nền tảng vững vàng cho một cuộc sống xanh, an lành và hạnh phúc.
+                    </p>
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-stone-100 flex items-center gap-2 text-xs font-bold text-[#5D8D4A]">
+                    <span>Nâng niu từng tế bào da</span>
+                    <CheckCircle2 size={14} className="text-[#5D8D4A]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 2: Tầm nhìn - Medium (col-span-6) */}
+              <div className="md:col-span-6 group p-2 rounded-[2.5rem] bg-stone-50 border border-stone-200/40 hover:border-[#5D8D4A]/30 transition-all duration-500 hover:shadow-[0_12px_32px_rgba(93,141,74,0.05)]">
+                <div className="bg-white rounded-[calc(2.5rem-0.5rem)] p-8 md:p-10 h-full flex flex-col justify-between border border-stone-100">
+                  <div>
+                    <div className="w-12 h-12 rounded-2xl bg-[#ED9717]/10 text-[#ED9717] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                      <Award size={22} />
+                    </div>
+                    <h3 className="text-2xl text-[#3A5B2C] font-bold mb-4">Tầm Nhìn Vươn Xa</h3>
+                    <p className="text-stone-500 text-sm md:text-base leading-relaxed font-light">
+                      Trở thành biểu tượng thương hiệu mỹ phẩm thiên nhiên cho mẹ và bé uy tín hàng đầu Việt Nam và vươn tầm Đông Nam Á. Chúng tôi tiên phong trong ứng dụng công nghệ sinh học hiện đại để nâng tầm giá trị dược liệu truyền thống của dân tộc, mang niềm tự hào Việt đi khắp muôn phương.
+                    </p>
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-stone-100 flex items-center gap-2 text-xs font-bold text-[#ED9717]">
+                    <span>Tự hào thảo dược Việt Nam</span>
+                    <CheckCircle2 size={14} className="text-[#ED9717]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 3: Giá trị cốt lõi - Large (col-span-12) */}
+              <div className="md:col-span-12 group p-2 rounded-[2.5rem] bg-stone-50 border border-stone-200/40 hover:border-[#5D8D4A]/30 transition-all duration-500 hover:shadow-[0_12px_32px_rgba(93,141,74,0.05)]">
+                <div className="bg-white rounded-[calc(2.5rem-0.5rem)] p-8 md:p-10 border border-stone-100">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                    <div className="lg:col-span-1">
+                      <div className="w-12 h-12 rounded-2xl bg-[#5D8D4A]/10 text-[#5D8D4A] flex items-center justify-center mb-6">
+                        <Sparkles size={22} />
+                      </div>
+                      <h3 className="text-2xl text-[#3A5B2C] font-bold mb-4">Giá Trị Cốt Lõi</h3>
+                      <p className="text-stone-500 text-sm leading-relaxed font-light">
+                        Nền tảng giá trị cấu thành nên từng giọt tinh chất Orya, được cam kết thực thi bởi mọi kỹ sư dược và nhà khoa học tại CVI Pharma.
+                      </p>
+                    </div>
+                    
+                    <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                      {/* Val 1 */}
+                      <div className="p-5 rounded-2xl bg-stone-50 hover:bg-[#5D8D4A]/5 transition-colors duration-300">
+                        <h4 className="font-bold text-[#3A5B2C] text-md mb-2 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#5D8D4A]"></span>
+                          An Toàn Tuyệt Đối
+                        </h4>
+                        <p className="text-stone-500 text-xs leading-relaxed font-light">
+                          Mọi thành phần thảo dược đều đạt độ tinh khiết cao nhất, không chứa độc tố hay chất cấm gây hại cho làn da mỏng manh.
+                        </p>
+                      </div>
+
+                      {/* Val 2 */}
+                      <div className="p-5 rounded-2xl bg-stone-50 hover:bg-[#5D8D4A]/5 transition-colors duration-300">
+                        <h4 className="font-bold text-[#3A5B2C] text-md mb-2 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#ED9717]"></span>
+                          Khoa Học Tiên Phong
+                        </h4>
+                        <p className="text-stone-500 text-xs leading-relaxed font-light">
+                          Công nghệ chiết xuất nano và công nghệ sinh học hiện đại giúp phát huy tối đa dược tính của nguyên liệu tự nhiên.
+                        </p>
+                      </div>
+
+                      {/* Val 3 */}
+                      <div className="p-5 rounded-2xl bg-stone-50 hover:bg-[#5D8D4A]/5 transition-colors duration-300">
+                        <h4 className="font-bold text-[#3A5B2C] text-md mb-2 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#5D8D4A]"></span>
+                          Trách Nhiệm & Tâm Huyết
+                        </h4>
+                        <p className="text-stone-500 text-xs leading-relaxed font-light">
+                          Đặt lợi ích sức khỏe lâu dài của trẻ em lên hàng đầu, cam kết đồng hành cùng các bậc cha mẹ trong hành trình khôn lớn.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ORIGIN STORY & NARRATIVE */}
+        <section id="hanh-trinh" className="py-24 bg-[#FAF9F5] relative overflow-hidden">
+          <div className="max-w-[1000px] mx-auto px-5">
+            
+            <div className="relative">
+              {/* Background decoration lines */}
+              <div className="absolute top-0 bottom-0 left-[20px] md:left-1/2 w-[1px] bg-stone-200 -z-10"></div>
+              
+              {/* Paragraph 1 */}
+              <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 items-start">
+                <div className="md:text-right md:pr-12 md:pt-4">
+                  <span className="text-[11px] font-bold text-[#ED9717] uppercase tracking-widest bg-[#ED9717]/10 px-3 py-1 rounded-full">
+                    Năm 2018
+                  </span>
+                </div>
+                <div className="absolute left-[10px] md:left-1/2 -translate-x-[11px] w-6 h-6 rounded-full border-4 border-[#FAF9F5] bg-[#5D8D4A] shadow-[0_0_10px_rgba(93,141,74,0.3)] z-10"></div>
+                <div className="pl-8 md:pl-12">
+                  <h3 className="text-xl md:text-2xl text-[#3A5B2C] font-bold mb-3">
+                    Nỗi trăn trở của người mẹ Dược sĩ
+                  </h3>
+                  <p className="text-stone-500 text-sm md:text-base leading-relaxed font-light">
+                    Khởi đầu của Orya là câu chuyện rất riêng tư của Dược sĩ Minh Thư - Trưởng phòng Nghiên cứu Công thức tại CVI Pharma. Khi sinh bé gái đầu lòng với làn da cực kỳ nhạy cảm, dễ bị mẩn ngứa, chàm sữa, chị đã lục tung thị trường để tìm kiếm các dòng tắm gội dịu nhẹ. Tuy nhiên, phần lớn các sản phẩm nhập khẩu đắt đỏ hay nội địa bình dân lúc đó đều chứa hương liệu nhân tạo và chất bảo quan sulfate, paraben.
+                  </p>
+                </div>
+              </div>
+
+              {/* Paragraph 2 */}
+              <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 items-start">
+                <div className="md:order-2 md:pl-12 md:pt-4">
+                  <span className="text-[11px] font-bold text-[#5D8D4A] uppercase tracking-widest bg-[#5D8D4A]/10 px-3 py-1 rounded-full">
+                    Năm 2020
+                  </span>
+                </div>
+                <div className="absolute left-[10px] md:left-1/2 -translate-x-[11px] w-6 h-6 rounded-full border-4 border-[#FAF9F5] bg-[#ED9717] shadow-[0_0_10px_rgba(237,151,23,0.3)] z-10"></div>
+                <div className="pl-8 md:pl-12 md:text-right md:order-1 md:pr-12">
+                  <h3 className="text-xl md:text-2xl text-[#3A5B2C] font-bold mb-3">
+                    Cái bắt tay của các nhà khoa học CVI
+                  </h3>
+                  <p className="text-stone-500 text-sm md:text-base leading-relaxed font-light">
+                    Hiểu được khó khăn của hàng triệu người mẹ khác, chị Minh Thư đã cùng các đồng nghiệp tại phòng Lab CVI Pharma bắt đầu hành trình dài 2 năm nghiên cứu. Họ tìm kiếm các loại thảo dược bản địa có đặc tính kháng viêm, cấp ẩm tự nhiên tốt nhất như Mướp đắng, Cúc La Mã, Trà xanh và Kim ngân hoa. Bằng kỹ thuật chiết tách công nghệ cao, họ đã loại bỏ hoàn toàn các tạp chất, giữ lại phần tinh túy nhất cho làn da non nớt.
+                  </p>
+                </div>
+              </div>
+
+              {/* Paragraph 3 */}
+              <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 items-start">
+                <div className="md:text-right md:pr-12 md:pt-4">
+                  <span className="text-[11px] font-bold text-[#ED9717] uppercase tracking-widest bg-[#ED9717]/10 px-3 py-1 rounded-full">
+                    Năm 2022
+                  </span>
+                </div>
+                <div className="absolute left-[10px] md:left-1/2 -translate-x-[11px] w-6 h-6 rounded-full border-4 border-[#FAF9F5] bg-[#5D8D4A] shadow-[0_0_10px_rgba(93,141,74,0.3)] z-10"></div>
+                <div className="pl-8 md:pl-12">
+                  <h3 className="text-xl md:text-2xl text-[#3A5B2C] font-bold mb-3">
+                    Hiện thực hóa giấc mơ Orya
+                  </h3>
+                  <p className="text-stone-500 text-sm md:text-base leading-relaxed font-light">
+                    Năm 2022, dòng tắm gội thảo dược trẻ em Orya đầu tiên ra mắt thị trường, nhanh chóng nhận được phản hồi tích cực từ các mẹ bỉm sữa nhờ hương thơm thảo mộc dịu nhẹ đặc trưng, khả năng ngừa rôm sảy vượt trội mà không làm khô da bé. Sự tin yêu của cộng đồng trở thành động lực to lớn để Orya tiếp tục nghiên cứu và mở rộng các dòng sản phẩm dành riêng cho mẹ bầu và mẹ sau sinh.
+                  </p>
+                </div>
+              </div>
+
+              {/* Paragraph 4 */}
+              <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="md:order-2 md:pl-12 md:pt-4">
+                  <span className="text-[11px] font-bold text-[#5D8D4A] uppercase tracking-widest bg-[#5D8D4A]/10 px-3 py-1 rounded-full">
+                    Hiện Tại
+                  </span>
+                </div>
+                <div className="absolute left-[10px] md:left-1/2 -translate-x-[11px] w-6 h-6 rounded-full border-4 border-[#FAF9F5] bg-[#ED9717] shadow-[0_0_10px_rgba(237,151,23,0.3)] z-10"></div>
+                <div className="pl-8 md:pl-12 md:text-right md:order-1 md:pr-12">
+                  <h3 className="text-xl md:text-2xl text-[#3A5B2C] font-bold mb-3">
+                    Đồng hành cùng hàng triệu gia đình Việt
+                  </h3>
+                  <p className="text-stone-500 text-sm md:text-base leading-relaxed font-light">
+                    Giờ đây, Orya tự hào có mặt tại hơn 500 cửa hàng mẹ & bé, các nhà thuốc và bệnh viện phụ sản trên cả nước. Trở thành một phần không thể thiếu trong hành trình nuôi con khôn lớn của hàng triệu ông bố bà mẹ Việt Nam.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Inspirational Quote - Double Bezel Card */}
+            <div className="mt-24 p-2 rounded-[2.5rem] bg-stone-50 border border-stone-200/50 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+              <div className="bg-white rounded-[calc(2.5rem-0.5rem)] p-8 md:p-12 text-center border border-stone-100 relative">
+                {/* Background natural leaf silhouette design icon */}
+                <div className="absolute top-6 left-6 text-stone-100 opacity-60">
+                  <Sparkles size={40} />
+                </div>
+                <p className="text-xl md:text-2xl text-[#3A5B2C] italic leading-relaxed mb-6 font-light max-w-2xl mx-auto">
+                  "Không có tình yêu thương nào lớn hơn tình yêu của người mẹ dành cho con. Và tại Orya, chúng tôi biến tình yêu thương đó thành những sản phẩm tinh khiết, khoa học và dịu lành nhất."
+                </p>
+                <div className="w-10 h-[1px] bg-[#ED9717] mx-auto mb-4"></div>
+                <p className="text-xs uppercase tracking-widest font-bold text-stone-400">Dược sĩ Minh Thư</p>
+                <p className="text-xs text-stone-500 mt-1">Đồng sáng lập & Trưởng phòng Nghiên cứu Công thức Orya</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* THE 5-FREE PROMISE (Cam kết 5 Không) */}
+        <section className="py-24 bg-white">
+          <div className="max-w-[1200px] mx-auto px-5">
+            
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#5D8D4A] font-bold">Cam kết vàng từ Orya</span>
+              <h2 className="text-3xl md:text-4xl text-[#3A5B2C] font-bold mt-3">Cam kết "5 KHÔNG" tuyệt đối</h2>
+              <p className="text-stone-500 text-sm md:text-base mt-4 font-light">
+                Làn da của trẻ sơ sinh mỏng hơn da người lớn đến 30% và nhạy cảm gấp nhiều lần. Orya kiên quyết loại bỏ hoàn toàn các chất gây hại để bảo vệ con tốt nhất.
+              </p>
+            </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            
+            {/* Item 1 */}
+            <div className="group p-2 rounded-[2rem] bg-stone-50 border border-stone-200/40 hover:border-red-100 hover:bg-red-50/10 transition-all duration-300">
+              <div className="bg-white group-hover:bg-red-50/5 rounded-[calc(2rem-0.5rem)] p-6 text-center border border-stone-100 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-6 text-xl font-bold border border-red-100">
+                    01
+                  </div>
+                  <h3 className="font-bold text-[#3A5B2C] text-base mb-2">Không Paraben</h3>
+                  <p className="text-stone-400 text-xs leading-relaxed font-light">
+                    Chất bảo quản hóa học có nguy cơ gây mất cân bằng nội tiết tố và kích ứng mạnh cho làn da mẫn cảm.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Item 2 */}
+            <div className="group p-2 rounded-[2rem] bg-stone-50 border border-stone-200/40 hover:border-red-100 hover:bg-red-50/10 transition-all duration-300">
+              <div className="bg-white group-hover:bg-red-50/5 rounded-[calc(2rem-0.5rem)] p-6 text-center border border-stone-100 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-6 text-xl font-bold border border-red-100">
+                    02
+                  </div>
+                  <h3 className="font-bold text-[#3A5B2C] text-base mb-2">Không SLS/SLES</h3>
+                  <p className="text-stone-400 text-xs leading-relaxed font-light">
+                    Chất tạo bọt công nghiệp làm mất đi lớp màng lipid bảo vệ tự nhiên của da, gây khô ráp và nứt nẻ.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Item 3 */}
+            <div className="group p-2 rounded-[2rem] bg-stone-50 border border-stone-200/40 hover:border-red-100 hover:bg-red-50/10 transition-all duration-300">
+              <div className="bg-white group-hover:bg-red-50/5 rounded-[calc(2rem-0.5rem)] p-6 text-center border border-stone-100 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-6 text-xl font-bold border border-red-100">
+                    03
+                  </div>
+                  <h3 className="font-bold text-[#3A5B2C] text-base mb-2">Không Dầu Khoáng</h3>
+                  <p className="text-stone-400 text-xs leading-relaxed font-light">
+                    Mineral Oil có nguy cơ bít tắc lỗ chân lông da trẻ, cản trở quá trình bài tiết tự nhiên dễ sinh rôm sảy.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Item 4 */}
+            <div className="group p-2 rounded-[2rem] bg-stone-50 border border-stone-200/40 hover:border-red-100 hover:bg-red-50/10 transition-all duration-300">
+              <div className="bg-white group-hover:bg-red-50/5 rounded-[calc(2rem-0.5rem)] p-6 text-center border border-stone-100 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-6 text-xl font-bold border border-red-100">
+                    04
+                  </div>
+                  <h3 className="font-bold text-[#3A5B2C] text-base mb-2">Không Hương Liệu</h3>
+                  <p className="text-stone-400 text-xs leading-relaxed font-light">
+                    Hương liệu tổng hợp (Fragrance) là tác nhân hàng đầu gây viêm da dị ứng và hắt hơi ở trẻ sơ sinh.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Item 5 */}
+            <div className="group p-2 rounded-[2rem] bg-stone-50 border border-stone-200/40 hover:border-red-100 hover:bg-red-50/10 transition-all duration-300">
+              <div className="bg-white group-hover:bg-red-50/5 rounded-[calc(2rem-0.5rem)] p-6 text-center border border-stone-100 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-6 text-xl font-bold border border-red-100">
+                    05
+                  </div>
+                  <h3 className="font-bold text-[#3A5B2C] text-base mb-2">Không Thử Nghiệm</h3>
+                  <p className="text-stone-400 text-xs leading-relaxed font-light">
+                    Orya cam kết nhân đạo, không thử nghiệm trên động vật và sử dụng nguyên liệu có nguồn gốc bền vững.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          </div>
+        </section>
+
+        {/* MANUFACTURING EXCELLENCE */}
+        <section className="py-24 bg-[#FAF9F5] border-t border-stone-200/50">
+          <div className="max-w-[1200px] mx-auto px-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              
+              {/* Image Box */}
+              <div className="order-2 lg:order-1 p-2 rounded-[2.5rem] bg-white border border-stone-200/50 shadow-[0_12px_36px_rgba(0,0,0,0.04)]">
+                <div className="rounded-[calc(2.5rem-0.5rem)] overflow-hidden aspect-[4/3] bg-stone-100">
+                  <img 
+                    src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80" 
+                    alt="Nhà máy CVI Pharma đạt chuẩn CGMP-ASEAN"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Content Box */}
+              <div className="order-1 lg:order-2">
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-[#ED9717]/10 text-[#ED9717] text-[10px] uppercase tracking-[0.2em] font-bold mb-6">
+                  <Factory size={10} />
+                  Công nghệ sản xuất
+                </div>
+                <h2 className="text-3xl md:text-4xl text-[#3A5B2C] font-bold mb-6 leading-snug">
+                  Sản xuất tại nhà máy Dược phẩm công nghệ cao CVI Pharma
+                </h2>
+                <p className="text-stone-600 text-base leading-relaxed mb-6 font-light">
+                  Toàn bộ sản phẩm của Orya được sản xuất tại tổ hợp nhà máy Công nghệ cao CVI Pharma tại Khu công nghệ cao Hòa Lạc. Đây là một trong số ít nhà máy đạt tiêu chuẩn <strong>CGMP-ASEAN</strong> (Thực hành tốt sản xuất mỹ phẩm của Hiệp hội các quốc gia Đông Nam Á).
+                </p>
+                
+                <ul className="space-y-4">
+                  <li className="flex gap-3 items-start">
+                    <span className="w-5 h-5 rounded-full bg-[#5D8D4A]/10 text-[#5D8D4A] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      ✓
+                    </span>
+                    <div>
+                      <strong className="text-stone-800 text-sm">Hệ thống phòng sạch chuẩn ISO:</strong>
+                      <p className="text-stone-500 text-xs mt-1">Đảm bảo môi trường vô trùng tuyệt đối trong quá trình pha chế và đóng gói sản phẩm.</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-3 items-start">
+                    <span className="w-5 h-5 rounded-full bg-[#5D8D4A]/10 text-[#5D8D4A] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      ✓
+                    </span>
+                    <div>
+                      <strong className="text-stone-800 text-sm">Công nghệ chiết xuất siêu âm & Nano:</strong>
+                      <p className="text-stone-500 text-xs mt-1">Giúp chia nhỏ kích thước các hoạt chất tự nhiên để da bé hấp thụ sâu mà không để lại lượng cặn dính bí.</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-3 items-start">
+                    <span className="w-5 h-5 rounded-full bg-[#5D8D4A]/10 text-[#5D8D4A] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      ✓
+                    </span>
+                    <div>
+                      <strong className="text-stone-800 text-sm">Kiểm định chất lượng 3 cấp độ:</strong>
+                      <p className="text-stone-500 text-xs mt-1">Từ kiểm nghiệm nguyên liệu đầu vào đến kiểm tra bán thành phẩm và kiểm định lâm sàng độc lập trước khi xuất xưởng.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* FINAL CALL TO ACTION */}
+        <section className="py-24 bg-gradient-to-br from-[#3A5B2C] to-[#253D1B] text-white relative overflow-hidden">
+          
+          {/* Glow decoration */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+          <div className="max-w-[800px] mx-auto px-5 text-center relative z-10">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#ED9717] font-bold">Hãy để Orya đồng hành cùng bạn</span>
+            <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 leading-tight">
+              Nâng niu từng giây phút ngọt ngào bên con
+            </h2>
+            <p className="text-stone-300 text-sm md:text-base mb-8 max-w-xl mx-auto font-light leading-relaxed">
+              Chọn sự an tâm tuyệt đối cho con yêu ngay hôm nay. Hãy trải nghiệm giải pháp chăm sóc da thảo dược thuần chay đột phá cùng Orya.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a
+                href="/san-pham"
+                className="group inline-flex items-center gap-3 bg-[#ED9717] text-white font-bold px-8 py-4 rounded-full hover:bg-yellow-600 transition-all duration-300 shadow-[0_4px_20px_rgba(237,151,23,0.3)] min-h-[48px] w-full sm:w-auto justify-center"
+              >
+                Xem dòng sản phẩm
+                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+                  <ArrowRight size={14} />
+                </span>
+              </a>
+              <a 
+                href="tel:18001800"
+                className="inline-flex items-center justify-center font-bold px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 transition-colors duration-300 w-full sm:w-auto min-h-[48px]"
+              >
+                Nhận tư vấn miễn phí
+              </a>
+            </div>
+          </div>
+        </section>
+
+      </main>
+      <Footer />
+    </>
+  );
+}\n===FILE:app/tin-tuc/page.tsx===\n"use client";
+
+import React, { useEffect, useState } from "react";
+import { Calendar, User, Search, BookOpen, ArrowRight, Tag } from "lucide-react";
+import Header from "@/src/components/layout/Header";
+import Footer from "@/src/components/layout/Footer";
+import { getNews, NewsItem } from "@/src/lib/dbService";
+
+export default function NewsListPage() {
+  const [newsList, setNewsList] = useState<NewsItem[]>([]);
+  const [filteredNews, setFilteredNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Tất cả");
+
+  useEffect(() => {
+    async function loadNews() {
+      try {
+        const data = await getNews();
+        // Filter only published news or all (since it's a blog page, show Published)
+        const publishedData = data.filter(item => item.status === "Published" || !item.status);
+        setNewsList(publishedData);
+        setFilteredNews(publishedData);
+      } catch (error) {
+        console.error("Failed to load news articles:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadNews();
+  }, []);
+
+  // Filter news based on search term and category selection
+  useEffect(() => {
+    let result = newsList;
+
+    // Filter by Category
+    if (selectedCategory !== "Tất cả") {
+      result = result.filter(
+        (item) => 
+          (item.excerpt && item.excerpt.toLowerCase().includes(selectedCategory.toLowerCase())) ||
+          (item.title && item.title.toLowerCase().includes(selectedCategory.toLowerCase())) ||
+          // Defaulting categories if they match typical keywords
+          (selectedCategory === "Kiến thức" && (item.title.toLowerCase().includes("bí quyết") || item.title.toLowerCase().includes("tại sao") || item.title.toLowerCase().includes("hướng dẫn") || item.title.toLowerCase().includes("kiến thức"))) ||
+          (selectedCategory === "Sự kiện" && (item.title.toLowerCase().includes("hội thảo") || item.title.toLowerCase().includes("sự kiện") || item.title.toLowerCase().includes("khai trương"))) ||
+          (selectedCategory === "Sản phẩm" && (item.title.toLowerCase().includes("sản phẩm") || item.title.toLowerCase().includes("ra mắt") || item.title.toLowerCase().includes("dòng mới")))
+      );
+    }
+
+    // Filter by Search Term
+    if (searchTerm.trim() !== "") {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.title.toLowerCase().includes(term) ||
+          (item.excerpt && item.excerpt.toLowerCase().includes(term)) ||
+          (item.content && item.content.toLowerCase().includes(term))
+      );
+    }
+
+    setFilteredNews(result);
+  }, [searchTerm, selectedCategory, newsList]);
+
+  // Map article to aesthetic category
+  const getCategoryDetails = (title: string) => {
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle.includes("bí quyết") || lowerTitle.includes("tại sao") || lowerTitle.includes("hướng dẫn")) {
+      return {
+        label: "Kiến thức",
+        color: "bg-[#ED9717]",
+        bgGradient: "from-[#FFF3E0] to-[#FFE0B2]",
+        emoji: "💡"
+      };
+    }
+    if (lowerTitle.includes("hội thảo") || lowerTitle.includes("sự kiện") || lowerTitle.includes("đồng hành")) {
+      return {
+        label: "Sự kiện",
+        color: "bg-[#5D8D4A]",
+        bgGradient: "from-[#E8F5E9] to-[#C8E6C9]",
+        emoji: "📅"
+      };
+    }
+    return {
+      label: "Sản phẩm",
+      color: "bg-[#5CC9FF]",
+      bgGradient: "from-[#E0F7FA] to-[#B2EBF2]",
+      emoji: "🌿"
+    };
+  };
+
+  const categories = ["Tất cả", "Kiến thức", "Sự kiện", "Sản phẩm"];
+
+  return (
+    <>
+      <Header />
+      <main className="bg-[#FAF9F5] text-[#2c3527] min-h-screen pb-20 selection:bg-[#5D8D4A]/10 selection:text-[#5D8D4A]">
+        {/* Background grain noise effect */}
+        <div className="fixed inset-0 pointer-events-none opacity-[0.015] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] z-40"></div>
+
+        {/* Hero Section */}
+        <section className="relative py-16 md:py-24 overflow-hidden bg-[#5D8D4A]/5 border-b border-[#5D8D4A]/10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#5D8D4A]/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+          <div className="max-w-[1200px] mx-auto px-5 text-center relative">
+            <span className="inline-block px-4 py-1.5 bg-[#5D8D4A]/10 text-[#5D8D4A] text-[10px] uppercase tracking-[0.2em] font-bold rounded-full mb-4">
+              Cẩm nang gia đình
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl text-[#3A5B2C] font-bold leading-tight tracking-tight mb-6">
+              Góc Tin Tức & Chia Sẻ
+            </h1>
+            <p className="max-w-2xl mx-auto text-stone-600 text-base md:text-lg leading-relaxed font-light">
+              Nơi cập nhật những hoạt động nổi bật của Orya cùng kiến thức khoa học hữu ích về chăm sóc sức khỏe mẹ bầu và bé yêu.
+            </p>
+          </div>
+        </section>
+
+        {/* Controls Section (Search & Filter) */}
+        <section className="max-w-[1200px] mx-auto px-5 mt-10 md:mt-14">
+          <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-200/60">
+            {/* Filter Categories */}
+            <div className="flex flex-wrap gap-2 w-full md:w-auto">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
+                    selectedCategory === cat
+                      ? "bg-[#5D8D4A] text-white shadow-[0_4px_12px_rgba(93,141,74,0.2)]"
+                      : "bg-[#FAF9F5] text-stone-600 hover:bg-[#5D8D4A]/10 hover:text-[#5D8D4A]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Input */}
+            <div className="relative w-full md:max-w-sm">
+              <input
+                type="text"
+                placeholder="Tìm kiếm bài viết..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-[#FAF9F5] border border-stone-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/30 focus:border-[#5D8D4A] text-sm text-stone-700 transition-all placeholder:text-stone-400"
+              />
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+            </div>
+          </div>
+        </section>
+
+        {/* Articles List / Grid */}
+        <section className="max-w-[1200px] mx-auto px-5 mt-10">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-12 h-12 border-4 border-[#5D8D4A]/20 border-t-[#5D8D4A] rounded-full animate-spin mb-4"></div>
+              <p className="text-stone-500 font-medium">Đang tải bài viết...</p>
+            </div>
+          ) : filteredNews.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-3xl border border-stone-200/60 shadow-sm">
+              <div className="text-5xl mb-4">🔍</div>
+              <h3 className="text-lg font-bold text-stone-700 mb-2">Không tìm thấy bài viết</h3>
+              <p className="text-stone-500 max-w-md mx-auto text-sm">
+                Không tìm thấy kết quả phù hợp với từ khóa "{searchTerm}" hoặc danh mục đã chọn. Vui lòng thử lại với từ khóa khác.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredNews.map((article) => {
+                const cat = getCategoryDetails(article.title);
+                return (
+                  <article
+                    key={article.id}
+                    className="group bg-white rounded-3xl overflow-hidden border border-stone-200/60 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_30px_rgba(93,141,74,0.08)] hover:border-[#5D8D4A]/30 transition-all duration-300 flex flex-col h-full"
+                  >
+                    {/* Cover Image / Image Placeholder */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100 border-b border-stone-100">
+                      {article.cover_image ? (
+                        <img
+                          src={article.cover_image}
+                          alt={article.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className={`w-full h-full bg-gradient-to-br ${cat.bgGradient} flex flex-col items-center justify-center transition-transform duration-700 group-hover:scale-105`}>
+                          <span className="text-5xl mb-2">{cat.emoji}</span>
+                          <span className="text-[#3A5B2C] font-bold text-xs uppercase tracking-wider">{cat.label}</span>
+                        </div>
+                      )}
+                      <span className={`absolute top-4 left-4 text-white text-[11px] font-bold px-3 py-1.5 rounded-full ${cat.color} shadow-sm z-10`}>
+                        {cat.label}
+                      </span>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-6 md:p-8 flex flex-col flex-grow">
+                      {/* Meta Info */}
+                      <div className="flex flex-wrap items-center gap-4 text-[13px] text-stone-500 mb-4">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar size={14} className="text-[#ED9717]" />
+                          {article.published_date || "Mới đây"}
+                        </span>
+                        {article.author && (
+                          <span className="flex items-center gap-1.5">
+                            <User size={14} className="text-[#5D8D4A]" />
+                            {article.author}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Title */}
+                      <h2 className="text-xl text-[#3A5B2C] font-bold leading-snug mb-4 group-hover:text-[#5D8D4A] transition-colors line-clamp-2">
+                        {article.title}
+                      </h2>
+
+                      {/* Excerpt */}
+                      <p className="text-stone-600 text-sm leading-relaxed mb-6 line-clamp-3 font-light flex-grow">
+                        {article.excerpt || (article.content ? article.content.substring(0, 120) + "..." : "")}
+                      </p>
+
+                      {/* Action */}
+                      <div className="pt-4 border-t border-stone-100 mt-auto">
+                        <a
+                          href={`/tin-tuc/${article.id}`}
+                          className="inline-flex items-center gap-2 text-sm font-bold text-[#5D8D4A] group-hover:text-[#3A5B2C] transition-colors"
+                        >
+                          Đọc toàn bộ bài viết
+                          <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}\n===FILE:app/tin-tuc/[id]/page.tsx===\n"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Calendar, User, ArrowLeft, Tag, BookOpen, ChevronRight } from "lucide-react";
+import Header from "@/src/components/layout/Header";
+import Footer from "@/src/components/layout/Footer";
+import { getNews, NewsItem } from "@/src/lib/dbService";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function NewsDetailPage({ params }: PageProps) {
+  const [id, setId] = useState<string | null>(null);
+  const [article, setArticle] = useState<NewsItem | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    params.then((res) => {
+      setId(res.id);
+    });
+  }, [params]);
+
+  useEffect(() => {
+    if (!id) return;
+    const articleId = id;
+
+    async function loadArticle() {
+      try {
+        const allArticles = await getNews();
+        const found = allArticles.find(
+          (item) => item.id.toString() === articleId.toString()
+        );
+        
+        if (found) {
+          setArticle(found);
+          // Get other articles as related
+          const others = allArticles
+            .filter((item) => item.id.toString() !== articleId.toString() && (item.status === "Published" || !item.status))
+            .slice(0, 3);
+          setRelatedArticles(others);
+        }
+      } catch (error) {
+        console.error("Failed to load article detail:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadArticle();
+  }, [id]);
+
+  // Map article to aesthetic category
+  const getCategoryDetails = (title: string) => {
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle.includes("bí quyết") || lowerTitle.includes("tại sao") || lowerTitle.includes("hướng dẫn")) {
+      return {
+        label: "Kiến thức",
+        color: "bg-[#ED9717]",
+        bgGradient: "from-[#FFF3E0] to-[#FFE0B2]",
+        emoji: "💡"
+      };
+    }
+    if (lowerTitle.includes("hội thảo") || lowerTitle.includes("sự kiện") || lowerTitle.includes("đồng hành")) {
+      return {
+        label: "Sự kiện",
+        color: "bg-[#5D8D4A]",
+        bgGradient: "from-[#E8F5E9] to-[#C8E6C9]",
+        emoji: "📅"
+      };
+    }
+    return {
+      label: "Sản phẩm",
+      color: "bg-[#5CC9FF]",
+      bgGradient: "from-[#E0F7FA] to-[#B2EBF2]",
+      emoji: "🌿"
+    };
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="bg-[#FAF9F5] min-h-screen flex flex-col items-center justify-center py-20">
+          <div className="w-12 h-12 border-4 border-[#5D8D4A]/20 border-t-[#5D8D4A] rounded-full animate-spin mb-4"></div>
+          <p className="text-stone-500 font-medium">Đang tải bài viết...</p>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!article) {
+    return (
+      <>
+        <Header />
+        <main className="bg-[#FAF9F5] min-h-screen py-20 text-center">
+          <div className="max-w-[1200px] mx-auto px-5">
+            <span className="text-6xl mb-6 block">🚫</span>
+            <h1 className="text-3xl text-[#3A5B2C] font-bold mb-4">Không tìm thấy bài viết</h1>
+            <p className="text-stone-600 mb-8 max-w-md mx-auto">
+              Bài viết này không tồn tại hoặc đã bị gỡ bỏ khỏi hệ thống.
+            </p>
+            <Link
+              href="/tin-tuc"
+              className="inline-flex items-center gap-2 bg-[#5D8D4A] text-white font-bold px-6 py-3 rounded-full hover:bg-[#4d753d] transition-all"
+            >
+              <ArrowLeft size={16} /> Quay lại trang tin tức
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  const cat = getCategoryDetails(article.title);
+
+  return (
+    <>
+      <Header />
+      <main className="bg-[#FAF9F5] text-[#2c3527] min-h-screen pb-20 selection:bg-[#5D8D4A]/10 selection:text-[#5D8D4A]">
+        {/* Background grain noise effect */}
+        <div className="fixed inset-0 pointer-events-none opacity-[0.015] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] z-40"></div>
+
+        {/* Breadcrumb Section */}
+        <nav className="max-w-[800px] mx-auto px-5 pt-8 md:pt-12 text-sm text-stone-500 flex items-center gap-2 flex-wrap">
+          <Link href="/" className="hover:text-[#5D8D4A] transition-colors">Trang chủ</Link>
+          <ChevronRight size={14} />
+          <Link href="/tin-tuc" className="hover:text-[#5D8D4A] transition-colors">Tin tức</Link>
+          <ChevronRight size={14} />
+          <span className="text-stone-800 line-clamp-1 max-w-[300px]">{article.title}</span>
+        </nav>
+
+        {/* Article Layout Container */}
+        <article className="max-w-[800px] mx-auto px-5 pt-6">
+          
+          {/* Header Title Info */}
+          <header className="mb-8">
+            <span className={`inline-block px-4.5 py-1.5 rounded-full text-white text-[11px] font-bold tracking-wider uppercase mb-5 ${cat.color}`}>
+              {cat.label}
+            </span>
+            
+            <h1 className="text-3xl md:text-4xl lg:text-5xl text-[#3A5B2C] font-bold leading-tight tracking-tight mb-6">
+              {article.title}
+            </h1>
+
+            {/* Author and Date */}
+            <div className="flex flex-wrap items-center gap-6 text-sm text-stone-500 pb-6 border-b border-stone-200">
+              <div className="flex items-center gap-2">
+                <Calendar size={16} className="text-[#ED9717]" />
+                <span>{article.published_date || "Mới đây"}</span>
+              </div>
+              {article.author && (
+                <div className="flex items-center gap-2">
+                  <User size={16} className="text-[#5D8D4A]" />
+                  <span className="font-medium text-stone-700">{article.author}</span>
+                </div>
+              )}
+            </div>
+          </header>
+
+          {/* Featured Cover Image */}
+          <div className="relative aspect-[16/9] w-full rounded-[2rem] overflow-hidden bg-stone-100 mb-10 shadow-[0_8px_30px_rgba(0,0,0,0.05)] border border-stone-200/50">
+            {article.cover_image ? (
+              <img
+                src={article.cover_image}
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-br ${cat.bgGradient} flex flex-col items-center justify-center`}>
+                <span className="text-7xl mb-3">{cat.emoji}</span>
+                <span className="text-[#3A5B2C] font-bold text-sm uppercase tracking-wider">{cat.label}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Excerpt Block */}
+          {article.excerpt && (
+            <div className="bg-stone-50 border-l-4 border-[#5D8D4A] p-6 rounded-r-2xl mb-8 shadow-sm">
+              <p className="italic text-stone-600 text-base md:text-lg leading-relaxed">
+                {article.excerpt}
+              </p>
+            </div>
+          )}
+
+          {/* Body Content */}
+          <div className="prose prose-stone max-w-none mb-14">
+            {article.content &&
+              article.content.split("\n").map((paragraph, index) => {
+                const trimmed = paragraph.trim();
+                if (!trimmed) return null;
+                return (
+                  <p key={index} className="text-stone-700 text-base md:text-lg leading-relaxed mb-6 font-light">
+                    {trimmed}
+                  </p>
+                );
+              })}
+          </div>
+
+          {/* Back Button */}
+          <div className="pt-8 border-t border-stone-200 mb-16 flex justify-between items-center">
+            <Link
+              href="/tin-tuc"
+              className="inline-flex items-center gap-2 text-[#5D8D4A] hover:text-[#3A5B2C] font-bold transition-colors"
+            >
+              <ArrowLeft size={16} /> Quay lại danh sách bài viết
+            </Link>
+          </div>
+        </article>
+
+        {/* Related Articles Section */}
+        {relatedArticles.length > 0 && (
+          <section className="bg-stone-100/50 border-t border-stone-200 py-16">
+            <div className="max-w-[1200px] mx-auto px-5">
+              <h2 className="text-[#3A5B2C] text-2xl font-bold mb-10 text-center">
+                Bài viết liên quan
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {relatedArticles.map((item) => {
+                  const relatedCat = getCategoryDetails(item.title);
+                  return (
+                    <Link
+                      key={item.id}
+                      href={`/tin-tuc/${item.id}`}
+                      className="group bg-white rounded-2xl overflow-hidden border border-stone-200/50 hover:shadow-[0_8px_25px_rgba(93,141,74,0.06)] hover:border-[#5D8D4A]/20 transition-all duration-300 flex flex-col h-full"
+                    >
+                      {/* Image */}
+                      <div className="relative aspect-[16/10] bg-stone-50 border-b border-stone-100">
+                        {item.cover_image ? (
+                          <img
+                            src={item.cover_image}
+                            alt={item.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className={`w-full h-full bg-gradient-to-br ${relatedCat.bgGradient} flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-105`}>
+                            <span className="text-4xl mb-1">{relatedCat.emoji}</span>
+                            <span className="text-[#3A5B2C] text-[10px] font-bold uppercase tracking-wider">{relatedCat.label}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="p-5 flex flex-col flex-grow">
+                        <span className="text-[12px] text-stone-400 mb-2 block">{item.published_date}</span>
+                        <h3 className="text-[#3A5B2C] font-bold text-base leading-snug mb-2 group-hover:text-[#5D8D4A] transition-colors line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-stone-500 text-xs leading-relaxed line-clamp-2 font-light mt-auto">
+                          {item.excerpt || (item.content ? item.content.substring(0, 80) + "..." : "")}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+      <Footer />
+    </>
+  );
+}\n===FILE:src/lib/supabase.ts===\nimport { createBrowserClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+export const isSupabaseConfigured =
+  supabaseUrl.length > 0 &&
+  supabaseAnonKey.length > 0 &&
+  supabaseUrl !== "YOUR_SUPABASE_URL" &&
+  supabaseAnonKey !== "YOUR_SUPABASE_ANON_KEY";
+
+const isBrowser = typeof window !== "undefined";
+
+export const supabase = isSupabaseConfigured
+  ? isBrowser
+    ? createBrowserClient(supabaseUrl, supabaseAnonKey)
+    : createSupabaseClient(supabaseUrl, supabaseAnonKey)
+  : null;\n===FILE:src/lib/dbService.ts===\nimport { supabase, isSupabaseConfigured } from "./supabase";
+
+export interface Product {
+  id: string | number;
+  name: string;
+  category: string; // 'Chăm sóc mẹ bầu', 'Chăm sóc sau sinh', 'Tắm gội bé', 'Dưỡng ẩm bé' or 'mom' / 'baby'
+  price: string;
+  priceValue: number;
+  originalPrice?: string;
+  originalPriceValue?: number;
+  badge?: string;
+  rating: number;
+  reviewsCount: number;
+  description: string;
+  shortDescription: string;
+  image?: string;
+  image_url?: string;
+  images?: string[];
+  primaryImage?: string;
+  slug?: string;
+  brand?: string;
+  is_active?: boolean;
+  isActive?: boolean;
+  colors?: string[];
+  benefits?: string[];
+  ingredients?: string[];
+  usage?: string[];
+}
+
+export interface NewsItem {
+  id: string | number;
+  title: string;
+  cover_image: string;
+  content: string;
+  excerpt: string;
+  author: string;
+  status: "Draft" | "Published";
+  published_date: string;
+}
+
+export interface Partner {
+  id: string | number;
+  name: string;
+  logo: string;
+  link?: string;
+}
+
+// Initial mock data for fallback/localstorage seeding
+const initialProducts: Product[] = [
+  {
+    id: 1,
+    name: "Dầu rạn da Orya cho mẹ bầu",
+    category: "mom",
+    price: "350.000đ",
+    priceValue: 350000,
+    originalPrice: "450.000đ",
+    originalPriceValue: 450000,
+    badge: "Bestseller",
+    rating: 4.9,
+    reviewsCount: 120,
+    description: "Dầu massage chuyên biệt ngăn ngừa và làm mờ các vết rạn da trong suốt thai kỳ và sau sinh. Chiết xuất 100% từ thảo dược thiên nhiên, an toàn tuyệt đối cho mẹ và bé.",
+    shortDescription: "Dầu massage ngăn ngừa và giảm rạn da cho mẹ bầu. Chiết xuất 100% từ thảo dược thiên nhiên, an toàn tuyệt đối cho mẹ và bé.",
+    image: "",
+    benefits: [
+      "Ngăn ngừa tối đa sự hình thành của các vết rạn nứt da mới.",
+      "Hỗ trợ làm mờ các vết rạn nứt cũ, làm mờ thâm sạm và giúp đều màu da."
+    ],
+    ingredients: [
+      "Dầu Hạnh Nhân Ngọt: Dưỡng ẩm sâu, tăng sản xuất collagen tự nhiên giúp da đàn hồi.",
+      "Dầu Jojoba Hữu Cơ: Cân bằng tuyến bã nhờn, thấm cực nhanh."
+    ],
+    usage: [
+      "Làm sạch và lau khô vùng da cần massage.",
+      "Thoa đều và massage nhẹ nhàng 5-10 phút."
+    ]
+  },
+  {
+    id: 2,
+    name: "Kem bôi ngực Orya sau sinh",
+    category: "mom",
+    price: "280.000đ",
+    priceValue: 280000,
+    originalPrice: "380.000đ",
+    originalPriceValue: 380000,
+    badge: "Mới",
+    rating: 4.8,
+    reviewsCount: 85,
+    description: "Kem dưỡng da vùng ngực chuyên biệt dành cho phụ nữ sau sinh. Sản phẩm giúp dưỡng ẩm, làm dịu da ngực khô ráp, phục hồi và cải thiện độ săn chắc của bầu ngực.",
+    shortDescription: "Kem dưỡng da ngực chuyên biệt sau sinh, giúp phục hồi và săn chắc da. Thành phần lành tính, không ảnh hưởng sữa mẹ.",
+    image: "",
+    benefits: ["Làm dịu nhanh tình trạng đau rát", "Cải thiện độ đàn hồi săn chắc"],
+    ingredients: ["Mỡ cừu Lanolin", "Bơ hạt mỡ", "Cúc La Mã"],
+    usage: ["Thoa đều núm vú và bầu ngực sau cữ bú"]
+  },
+  {
+    id: 3,
+    name: "Nước tắm gội Orya Kids",
+    category: "baby",
+    price: "195.000đ",
+    priceValue: 195000,
+    originalPrice: "250.000đ",
+    originalPriceValue: 250000,
+    badge: "Vegan",
+    rating: 4.9,
+    reviewsCount: 95,
+    description: "Nước tắm gội 2 trong 1 dành cho trẻ sơ sinh và trẻ nhỏ. pH cân bằng 5.5, không SLS, không cồn, không gây kích ứng.",
+    shortDescription: "Nước tắm gội 2 trong 1 dành cho trẻ sơ sinh và trẻ nhỏ. pH cân bằng 5.5, không SLS, không cồn, không gây kích ứng.",
+    image: ""
+  },
+  {
+    id: 4,
+    name: "Dưỡng thể Orya Baby",
+    category: "baby",
+    price: "220.000đ",
+    priceValue: 220000,
+    originalPrice: "",
+    badge: "",
+    rating: 4.7,
+    reviewsCount: 42,
+    description: "Kem dưỡng ẩm toàn thân cho bé, giúp da mềm mại mịn màng suốt cả ngày. Công thức nhẹ nhàng, thẩm thấu nhanh.",
+    shortDescription: "Kem dưỡng ẩm toàn thân cho bé, giúp da mềm mại mịn màng suốt cả ngày. Công thức nhẹ nhàng, thẩm thấu nhanh.",
+    image: ""
+  }
+];
+
+const initialNews: NewsItem[] = [
+  {
+    id: 1,
+    title: "Bí quyết chăm sóc da bụng không vết rạn cho mẹ bầu",
+    cover_image: "",
+    excerpt: "Làm thế nào để duy trì làn da bụng căng mịn, không rạn nứt trong suốt 9 tháng thai kỳ? Hãy cùng Orya tìm hiểu những mẹo vàng dưới đây.",
+    content: "Rạn da thai kỳ là nỗi lo lắng của hơn 90% mẹ bầu. Khi thai nhi lớn dần, da bụng phải kéo giãn nhanh chóng, làm đứt gãy các sợi collagen và elastin. Để phòng ngừa hiệu quả, mẹ nên bắt đầu thoa dầu rạn da từ tháng thứ 3 của thai kỳ. Massage đều đặn 2 lần mỗi ngày giúp da duy trì độ đàn hồi tự nhiên. Ngoài ra, việc uống đủ 2-2.5 lít nước mỗi ngày và duy trì chế độ dinh dưỡng giàu Vitamin C, Vitamin E cũng đóng vai trò vô cùng quan trọng.",
+    author: "Bác sĩ Hồng Anh",
+    status: "Published",
+    published_date: "12/07/2026"
+  },
+  {
+    id: 2,
+    title: "Tại sao nên chọn sản phẩm hữu cơ thuần chay cho trẻ sơ sinh?",
+    cover_image: "",
+    excerpt: "Làn da trẻ sơ sinh mỏng hơn 5 lần so với da người lớn. Sử dụng sản phẩm hóa học dễ gây kích ứng, dị ứng da bé.",
+    content: "Làn da nhạy cảm của bé yêu cần được nâng niu bằng những gì thuần khiết nhất. Các sản phẩm tắm gội hữu cơ (organic) và thuần chay (vegan) không chứa sulfat (SLS/SLES), paraben, cồn hay hương liệu nhân tạo. Việc này giúp bảo vệ màng ẩm tự nhiên của da bé, ngăn ngừa rôm sảy, hăm tã và chàm sữa một cách an toàn nhất.",
+    author: "Dược sĩ Minh Thư",
+    status: "Published",
+    published_date: "14/07/2026"
+  }
+];
+
+const initialPartners: Partner[] = [
+  { id: 1, name: "Con Cưng", logo: "", link: "https://concung.com" },
+  { id: 2, name: "KidsPlaza", logo: "", link: "https://kidsplaza.vn" },
+  { id: 3, name: "Pharmacity", logo: "", link: "https://pharmacity.vn" },
+  { id: 4, name: "Guardian", logo: "", link: "https://guardian.com.vn" },
+  { id: 5, name: "An Khang", logo: "", link: "https://nhathuocankhang.com" },
+  { id: 6, name: "Long Châu", logo: "", link: "https://nhathuoclongchau.com.vn" }
+];
+
+// Helper to get from local storage or initialize
+function getLocalData<T>(key: string, initialData: T[]): T[] {
+  if (typeof window === "undefined") return initialData;
+  const raw = window.localStorage.getItem(key);
+  if (!raw) {
+    window.localStorage.setItem(key, JSON.stringify(initialData));
+    return initialData;
+  }
+  return JSON.parse(raw);
+}
+
+function saveLocalData<T>(key: string, data: T[]) {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(key, JSON.stringify(data));
+  }
+}
+
+/* ==================== PRODUCTS CRUD ==================== */
+
+async function withSupabaseTimeout<T>(promise: PromiseLike<T>, fallback: T, timeoutMs = 2500): Promise<T> {
+  return Promise.race([
+    promise.then((result) => result),
+    new Promise<T>((resolve) => {
+      setTimeout(() => resolve(fallback), timeoutMs);
+    }),
+  ]);
+}
+
+export async function getProducts(): Promise<Product[]> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const result = await withSupabaseTimeout(
+        supabase
+          .from("products")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .then(({ data, error }) => {
+            if (error) {
+              throw error;
+            }
+            return data || [];
+          }),
+        [],
+      );
+
+      if (result.length > 0) {
+        return result.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          priceValue: p.price_value || 0,
+          originalPrice: p.original_price || "",
+          originalPriceValue: p.original_price_value || 0,
+          badge: p.badge || "",
+          rating: p.rating || 5,
+          reviewsCount: p.reviews_count || 0,
+          description: p.description || "",
+          shortDescription: p.short_description || "",
+          image: p.image || "",
+          image_url: p.image_url || p.image || "",
+          images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
+          primaryImage: p.primary_image || p.image || "",
+          slug: p.slug || "",
+          brand: p.brand || "",
+          is_active: p.is_active,
+          isActive: p.is_active,
+          colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: p.benefits || [],
+          ingredients: p.ingredients || [],
+          usage: p.usage || []
+        }));
+      }
+    } catch (error) {
+      console.error("Supabase error getting products, falling back to LocalStorage:", error);
+    }
+  }
+  return getLocalData<Product>("orya_products", initialProducts);
+}
+
+export async function createProduct(prod: Omit<Product, "id">): Promise<Product> {
+  const newProduct = {
+    ...prod,
+    id: Date.now().toString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("products")
+      .insert([
+        {
+          name: prod.name,
+          category: prod.category,
+          price: prod.price,
+          price_value: prod.priceValue,
+          original_price: prod.originalPrice,
+          original_price_value: prod.originalPriceValue,
+          badge: prod.badge,
+          rating: prod.rating,
+          reviews_count: prod.reviewsCount,
+          description: prod.description,
+          short_description: prod.shortDescription,
+          image: prod.primaryImage || prod.images?.[0] || prod.image || null,
+          images: prod.images || (prod.image ? [prod.image] : []),
+          primary_image: prod.primaryImage || prod.images?.[0] || prod.image || null,
+          benefits: prod.benefits,
+          ingredients: prod.ingredients,
+          usage: prod.usage
+        }
+      ])
+      .select();
+    
+    if (!error && data && data[0]) {
+      return {
+        ...data[0],
+        id: data[0].id,
+        priceValue: data[0].price_value,
+        originalPrice: data[0].original_price,
+        originalPriceValue: data[0].original_price_value,
+        reviewsCount: data[0].reviews_count,
+        shortDescription: data[0].short_description
+      };
+    }
+    console.error("Supabase error creating product, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<Product>("orya_products", initialProducts);
+  list.unshift(newProduct);
+  saveLocalData("orya_products", list);
+  return newProduct;
+}
+
+export async function updateProduct(id: string | number, prod: Omit<Product, "id">): Promise<Product> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("products")
+      .update({
+        name: prod.name,
+        category: prod.category,
+        price: prod.price,
+        price_value: prod.priceValue,
+        original_price: prod.originalPrice,
+        original_price_value: prod.originalPriceValue,
+        badge: prod.badge,
+        rating: prod.rating,
+        reviews_count: prod.reviewsCount,
+        description: prod.description,
+        short_description: prod.shortDescription,
+        image: prod.primaryImage || prod.images?.[0] || prod.image || null,
+        images: prod.images || (prod.image ? [prod.image] : []),
+        primary_image: prod.primaryImage || prod.images?.[0] || prod.image || null,
+        benefits: prod.benefits,
+        ingredients: prod.ingredients,
+        usage: prod.usage
+      })
+      .eq("id", id)
+      .select();
+    
+    if (!error && data && data[0]) {
+      return {
+        ...data[0],
+        id: data[0].id,
+        priceValue: data[0].price_value,
+        originalPrice: data[0].original_price,
+        originalPriceValue: data[0].original_price_value,
+        reviewsCount: data[0].reviews_count,
+        shortDescription: data[0].short_description
+      };
+    }
+    console.error("Supabase error updating product, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<Product>("orya_products", initialProducts);
+  const index = list.findIndex((item) => item.id.toString() === id.toString());
+  if (index !== -1) {
+    list[index] = { ...prod, id };
+    saveLocalData("orya_products", list);
+    return list[index];
+  }
+  throw new Error("Product not found");
+}
+
+export async function deleteProduct(id: string | number): Promise<boolean> {
+  if (isSupabaseConfigured && supabase) {
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (!error) return true;
+    console.error("Supabase error deleting product, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<Product>("orya_products", initialProducts);
+  const filtered = list.filter((item) => item.id.toString() !== id.toString());
+  saveLocalData("orya_products", filtered);
+  return true;
+}
+
+
+/* ==================== NEWS CRUD ==================== */
+
+export async function getNews(): Promise<NewsItem[]> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (!error && data) {
+      return data;
+    }
+    console.error("Supabase error getting news, falling back to LocalStorage:", error);
+  }
+  return getLocalData<NewsItem>("orya_news", initialNews);
+}
+
+export async function createNews(news: Omit<NewsItem, "id" | "published_date">): Promise<NewsItem> {
+  const today = new Date();
+  const dateStr = `${today.getDate().toString().padStart(2, "0")}/${(today.getMonth() + 1).toString().padStart(2, "0")}/${today.getFullYear()}`;
+  
+  const newNews: NewsItem = {
+    ...news,
+    id: Date.now().toString(),
+    published_date: dateStr
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("news")
+      .insert([
+        {
+          title: news.title,
+          cover_image: news.cover_image,
+          content: news.content,
+          excerpt: news.excerpt,
+          author: news.author,
+          status: news.status,
+          published_date: dateStr
+        }
+      ])
+      .select();
+    
+    if (!error && data && data[0]) {
+      return data[0];
+    }
+    console.error("Supabase error creating news, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<NewsItem>("orya_news", initialNews);
+  list.unshift(newNews);
+  saveLocalData("orya_news", list);
+  return newNews;
+}
+
+export async function updateNews(id: string | number, news: Omit<NewsItem, "id" | "published_date">): Promise<NewsItem> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("news")
+      .update({
+        title: news.title,
+        cover_image: news.cover_image,
+        content: news.content,
+        excerpt: news.excerpt,
+        author: news.author,
+        status: news.status
+      })
+      .eq("id", id)
+      .select();
+    
+    if (!error && data && data[0]) {
+      return data[0];
+    }
+    console.error("Supabase error updating news, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<NewsItem>("orya_news", initialNews);
+  const index = list.findIndex((item) => item.id.toString() === id.toString());
+  if (index !== -1) {
+    const existingDate = list[index].published_date;
+    list[index] = { ...news, id, published_date: existingDate };
+    saveLocalData("orya_news", list);
+    return list[index];
+  }
+  throw new Error("News item not found");
+}
+
+export async function deleteNews(id: string | number): Promise<boolean> {
+  if (isSupabaseConfigured && supabase) {
+    const { error } = await supabase.from("news").delete().eq("id", id);
+    if (!error) return true;
+    console.error("Supabase error deleting news, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<NewsItem>("orya_news", initialNews);
+  const filtered = list.filter((item) => item.id.toString() !== id.toString());
+  saveLocalData("orya_news", filtered);
+  return true;
+}
+
+
+/* ==================== PARTNERS CRUD ==================== */
+
+export async function getPartners(): Promise<Partner[]> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("partners")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (!error && data) {
+      return data;
+    }
+    console.error("Supabase error getting partners, falling back to LocalStorage:", error);
+  }
+  return getLocalData<Partner>("orya_partners", initialPartners);
+}
+
+export async function createPartner(partner: Omit<Partner, "id">): Promise<Partner> {
+  const newPartner: Partner = {
+    ...partner,
+    id: Date.now().toString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("partners")
+      .insert([
+        {
+          name: partner.name,
+          logo: partner.logo,
+          link: partner.link
+        }
+      ])
+      .select();
+    
+    if (!error && data && data[0]) {
+      return data[0];
+    }
+    console.error("Supabase error creating partner, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<Partner>("orya_partners", initialPartners);
+  list.unshift(newPartner);
+  saveLocalData("orya_partners", list);
+  return newPartner;
+}
+
+export async function updatePartner(id: string | number, partner: Omit<Partner, "id">): Promise<Partner> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("partners")
+      .update({
+        name: partner.name,
+        logo: partner.logo,
+        link: partner.link
+      })
+      .eq("id", id)
+      .select();
+    
+    if (!error && data && data[0]) {
+      return data[0];
+    }
+    console.error("Supabase error updating partner, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<Partner>("orya_partners", initialPartners);
+  const index = list.findIndex((item) => item.id.toString() === id.toString());
+  if (index !== -1) {
+    list[index] = { ...partner, id };
+    saveLocalData("orya_partners", list);
+    return list[index];
+  }
+  throw new Error("Partner not found");
+}
+
+export async function deletePartner(id: string | number): Promise<boolean> {
+  if (isSupabaseConfigured && supabase) {
+    const { error } = await supabase.from("partners").delete().eq("id", id);
+    if (!error) return true;
+    console.error("Supabase error deleting partner, falling back to LocalStorage:", error);
+  }
+
+  const list = getLocalData<Partner>("orya_partners", initialPartners);
+  const filtered = list.filter((item) => item.id.toString() !== id.toString());
+  saveLocalData("orya_partners", filtered);
+  return true;
+}
+
+export async function getActiveProducts(): Promise<Product[]> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const result = await withSupabaseTimeout(
+        supabase
+          .from("products")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .then(({ data, error }) => {
+            if (error) {
+              throw error;
+            }
+            return data || [];
+          }),
+        [],
+      );
+
+      if (result.length > 0) {
+        return result.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          priceValue: p.price_value || 0,
+          originalPrice: p.original_price || "",
+          originalPriceValue: p.original_price_value || 0,
+          badge: p.badge || "",
+          rating: p.rating || 5,
+          reviewsCount: p.reviews_count || 0,
+          description: p.description || "",
+          shortDescription: p.short_description || "",
+          image: p.image || "",
+          image_url: p.image_url || p.image || "",
+          images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
+          primaryImage: p.primary_image || p.image || "",
+          slug: p.slug || "",
+          brand: p.brand || "",
+          is_active: p.is_active,
+          isActive: p.is_active,
+          colors: p.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: p.benefits || [],
+          ingredients: p.ingredients || [],
+          usage: p.usage || []
+        }));
+      }
+    } catch (error) {
+      console.error("Supabase error getting active products, falling back to LocalStorage:", error);
+    }
+  }
+  const all = await getProducts();
+  return all.filter((p) => p.is_active !== false && p.isActive !== false);
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  if (isSupabaseConfigured && supabase) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(slug);
+
+    if (isUuid) {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", slug)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          name: data.name,
+          category: data.category,
+          price: data.price,
+          priceValue: data.price_value || 0,
+          originalPrice: data.original_price || "",
+          originalPriceValue: data.original_price_value || 0,
+          badge: data.badge || "",
+          rating: data.rating || 5,
+          reviewsCount: data.reviews_count || 0,
+          description: data.description || "",
+          shortDescription: data.short_description || "",
+          image: data.image || "",
+          image_url: data.image_url || data.image || "",
+          images: Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []),
+          primaryImage: data.primary_image || data.image || "",
+          slug: data.slug || "",
+          brand: data.brand || "",
+          is_active: data.is_active,
+          isActive: data.is_active,
+          colors: data.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: data.benefits || [],
+          ingredients: data.ingredients || [],
+          usage: data.usage || []
+        };
+      }
+    }
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      const fallback = data.find((product: Record<string, unknown>) => {
+        const candidate = typeof product.name === "string" ? product.name : "";
+        const normalized = candidate
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/\p{Diacritic}/gu, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+        return normalized === slug;
+      });
+
+      if (fallback) {
+        return {
+          id: fallback.id,
+          name: fallback.name,
+          category: fallback.category,
+          price: fallback.price,
+          priceValue: fallback.price_value || 0,
+          originalPrice: fallback.original_price || "",
+          originalPriceValue: fallback.original_price_value || 0,
+          badge: fallback.badge || "",
+          rating: fallback.rating || 5,
+          reviewsCount: fallback.reviews_count || 0,
+          description: fallback.description || "",
+          shortDescription: fallback.short_description || "",
+          image: fallback.image || "",
+          image_url: fallback.image_url || fallback.image || "",
+          images: Array.isArray(fallback.images) ? fallback.images : (fallback.image ? [fallback.image] : []),
+          primaryImage: fallback.primary_image || fallback.image || "",
+          slug: fallback.slug || "",
+          brand: fallback.brand || "",
+          is_active: fallback.is_active,
+          isActive: fallback.is_active,
+          colors: fallback.colors || ["from-[#F5E6D3] to-[#E5C9A6]", "from-[#EAF2E8] to-[#C2DCBE]"],
+          benefits: fallback.benefits || [],
+          ingredients: fallback.ingredients || [],
+          usage: fallback.usage || []
+        };
+      }
+    }
+  }
+
+  const list = await getProducts();
+  return list.find((p) => p.id.toString() === slug || p.slug === slug) || null;
+}
+\n===FILE:src/data/products.ts===\nexport interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: string;
+  priceValue: number;
+  originalPrice?: string;
+  originalPriceValue?: number;
+  badge?: string;
+  rating: number;
+  reviewsCount: number;
+  description: string;
+  shortDescription: string;
+  colors: string[]; // Gradients for visual placeholders
+  benefits: string[];
+  ingredients: string[];
+  usage: string[];
+}
+
+export const products: Product[] = [
+  {
+    id: 1,
+    name: "Dầu rạn da Orya cho mẹ bầu",
+    category: "Chăm sóc mẹ bầu",
+    price: "350.000đ",
+    priceValue: 350000,
+    originalPrice: "450.000đ",
+    originalPriceValue: 450000,
+    badge: "Bestseller",
+    rating: 4.9,
+    reviewsCount: 120,
+    description:
+      "Dầu massage chuyên biệt ngăn ngừa và làm mờ các vết rạn da trong suốt thai kỳ và sau sinh. Chiết xuất 100% từ thảo dược thiên nhiên, an toàn tuyệt đối cho mẹ và bé, giúp da đàn hồi, mềm mịn và ngăn ngừa thâm sạm.",
+    shortDescription:
+      "Dầu massage ngăn ngừa và giảm rạn da cho mẹ bầu. Chiết xuất 100% từ thảo dược thiên nhiên, an toàn tuyệt đối cho mẹ và bé.",
+    colors: [
+      "from-[#5D8D4A] via-[#6CA356] to-[#4A7A38]",
+      "from-[#6CA356] via-[#81c76f] to-[#5D8D4A]",
+      "from-[#4A7A38] via-[#5D8D4A] to-[#3a612b]"
+    ],
+    benefits: [
+      "Ngăn ngừa tối đa sự hình thành của các vết rạn nứt da mới.",
+      "Hỗ trợ làm mờ các vết rạn nứt cũ, làm mờ thâm sạm và giúp đều màu da.",
+      "Cung cấp độ ẩm chuyên sâu, cải thiện độ đàn hồi tự nhiên của da bụng, đùi và ngực.",
+      "Giảm cảm giác ngứa ngáy khó chịu do da căng giãn ở các tháng cuối thai kỳ."
+    ],
+    ingredients: [
+      "Dầu Hạnh Nhân Ngọt (Sweet Almond Oil): Dưỡng ẩm sâu, tăng sản xuất collagen tự nhiên giúp da đàn hồi.",
+      "Dầu Jojoba Hữu Cơ: Cân bằng tuyến bã nhờn, thấm cực nhanh không để lại cảm giác nhờn rít.",
+      "Chiết xuất Lô Hội (Aloe Vera): Làm dịu làn da bị căng rát, tái tạo vùng da bị tổn thương.",
+      "Tinh dầu oải hương thiên nhiên: Tạo hương thơm dịu nhẹ, giải tỏa căng thẳng cho mẹ bầu.",
+      "Sản phẩm 5 KHÔNG: Không SLS/SLES, không Paraben, không cồn, không dầu khoáng, không hương liệu hóa học."
+    ],
+    usage: [
+      "Làm sạch và lau khô vùng da cần massage (bụng, đùi, mông, ngực).",
+      "Lấy một lượng dầu vừa đủ (khoảng 3-5 giọt) ra lòng bàn tay, xoa nhẹ hai tay vào nhau để làm ấm dầu.",
+      "Massage nhẹ nhàng lên da theo chuyển động tròn từ ngoài vào trong, từ dưới lên trên khoảng 5-10 phút.",
+      "Sử dụng đều đặn mỗi ngày 2 lần từ tháng thứ 3 của thai kỳ để đạt hiệu quả tốt nhất."
+    ]
+  },
+  {
+    id: 2,
+    name: "Kem bôi ngực Orya sau sinh",
+    category: "Chăm sóc sau sinh",
+    price: "280.000đ",
+    priceValue: 280000,
+    originalPrice: "380.000đ",
+    originalPriceValue: 380000,
+    badge: "Mới",
+    rating: 4.8,
+    reviewsCount: 85,
+    description:
+      "Kem dưỡng da vùng ngực chuyên biệt dành cho phụ nữ sau sinh. Sản phẩm giúp dưỡng ẩm, làm dịu da ngực khô ráp, phục hồi và cải thiện độ săn chắc của bầu ngực. Thành phần 100% chuẩn thực phẩm an toàn tuyệt đối cho bé bú.",
+    shortDescription:
+      "Kem dưỡng da ngực chuyên biệt sau sinh, giúp phục hồi và săn chắc da. Thành phần lành tính, không ảnh hưởng sữa mẹ.",
+    colors: [
+      "from-[#F6ABB4] via-[#e8899a] to-[#d47281]",
+      "from-[#e8899a] via-[#f7cbd1] to-[#F6ABB4]",
+      "from-[#d47281] via-[#F6ABB4] to-[#b35261]"
+    ],
+    benefits: [
+      "Làm dịu nhanh chóng tình trạng đau rát, nứt nẻ đầu ti (nứt cổ gà) khi cho con bú.",
+      "Cải thiện độ đàn hồi và săn chắc cho da vùng ngực, hạn chế tình trạng chảy xệ sau sinh.",
+      "Dưỡng ẩm sâu, ngăn ngừa nếp nhăn và khô sạm da bầu ngực.",
+      "Thành phần tinh khiết chuẩn thực phẩm (food-grade), không cần lau lại trước khi cho bé bú."
+    ],
+    ingredients: [
+      "Mỡ Cừu Lanolin Tinh Khiết: Tạo màng bảo vệ tối ưu cho đầu ti, ngăn nứt nẻ hiệu quả.",
+      "Bơ Hạt Mỡ (Shea Butter) & Dầu Dừa: Cung cấp lipid tự nhiên nuôi dưỡng da mềm mại.",
+      "Chiết xuất Cúc La Mã: Kháng viêm, làm dịu vùng da sưng đỏ hoặc nứt rát.",
+      "Vitamin E tự nhiên: Chống oxy hóa mạnh mẽ, kích thích tái tạo da ngực săn chắc.",
+      "Sản phẩm 5 KHÔNG: Không SLS/SLES, không Paraben, không cồn, không màu nhân tạo, không hương liệu hóa học."
+    ],
+    usage: [
+      "Sau khi cho bé bú hoặc vắt sữa, vệ sinh sạch vùng ngực bằng nước ấm và thấm khô.",
+      "Lấy một lượng kem nhỏ bằng hạt đậu ra đầu ngón tay sạch.",
+      "Thoa đều lên bầu ngực và núm vú, kết hợp massage nhẹ nhàng theo chiều kim đồng hồ.",
+      "Thoa liên tục sau mỗi cữ bú hoặc bất cứ khi nào thấy vùng da đầu ti có dấu hiệu khô, nứt rát."
+    ]
+  },
+  {
+    id: 3,
+    name: "Nước tắm gội Orya Kids",
+    category: "Chăm sóc em bé",
+    price: "195.000đ",
+    priceValue: 195000,
+    originalPrice: "250.000đ",
+    originalPriceValue: 250000,
+    badge: "Vegan",
+    rating: 4.9,
+    reviewsCount: 145,
+    description:
+      "Sữa tắm gội thảo dược 2 trong 1 cực kỳ dịu nhẹ dành riêng cho trẻ sơ sinh và trẻ nhỏ. Độ pH 5.5 cân bằng sinh lý da bé, không gây cay mắt, giúp bảo vệ lớp màng ẩm tự nhiên và ngăn ngừa rôm sảy, hăm tã hiệu quả.",
+    shortDescription:
+      "Nước tắm gội 2 trong 1 dành cho trẻ sơ sinh và trẻ nhỏ. pH cân bằng 5.5, không SLS, không cồn, không gây kích ứng.",
+    colors: [
+      "from-[#5CC9FF] via-[#3ab5ed] to-[#1e9ad4]",
+      "from-[#3ab5ed] via-[#85dbff] to-[#5CC9FF]",
+      "from-[#1e9ad4] via-[#5CC9FF] to-[#107aa8]"
+    ],
+    benefits: [
+      "Làm sạch nhẹ nhàng bụi bẩn, mồ hôi và vảy da đầu của bé (cứt trâu) mà không làm khô da.",
+      "Hỗ trợ kháng khuẩn tự nhiên, giảm ngứa, ngừa rôm sảy, mụn nhọt và hăm tã.",
+      "Độ pH 5.5 lý tưởng giúp duy trì hàng rào bảo vệ da tự nhiên của trẻ.",
+      "Công thức không cay mắt (No Tears), mang lại sự dễ chịu tuyệt đối cho bé khi tắm."
+    ],
+    ingredients: [
+      "Chiết xuất Khổ Qua & Trà Xanh: Kháng khuẩn tự nhiên, làm mát da và phòng ngừa rôm sảy.",
+      "Chiết xuất Ké Đầu Ngựa & Sài Đất: Thảo dược Đông y giúp thải độc da, giảm mẩn ngứa.",
+      "Dầu Màng Tang & Tinh dầu Tràm Gió: Giúp làm ấm cơ thể bé, chống cảm lạnh khi tắm.",
+      "Panthenol (Vitamin B5): Dưỡng ẩm tối ưu, xoa dịu các nốt mẩn đỏ.",
+      "Sản phẩm 5 KHÔNG: Không SLS/SLES, không cồn, không Paraben, không hương liệu hóa học, không cay mắt."
+    ],
+    usage: [
+      "Chuẩn bị nước tắm ấm (khoảng 37 độ C) trong chậu tắm cho bé.",
+      "Lấy một lượng nhỏ sữa tắm gội xoa đều lên tóc và cơ thể bé để tạo bọt nhẹ dịu.",
+      "Massage nhẹ nhàng da đầu và toàn thân bé để làm sạch hoàn toàn bụi bẩn.",
+      "Tắm sạch lại bằng nước ấm sạch và dùng khăn mềm lau khô người bé ngay lập tức."
+    ]
+  },
+  {
+    id: 4,
+    name: "Dưỡng thể Orya Baby",
+    category: "Chăm sóc em bé",
+    price: "220.000đ",
+    priceValue: 220000,
+    originalPrice: "290.000đ",
+    originalPriceValue: 290000,
+    badge: "Mềm mịn",
+    rating: 4.7,
+    reviewsCount: 64,
+    description:
+      "Sữa dưỡng thể dịu nhẹ, thẩm thấu nhanh giúp dưỡng ẩm tối ưu cho làn da mỏng manh của bé. Công thức giàu lipid thực vật và vitamin giúp phục hồi hàng rào bảo vệ da, ngăn chặn tình trạng da khô ráp nứt nẻ vào mùa đông.",
+    shortDescription:
+      "Kem dưỡng ẩm toàn thân cho bé, giúp da mềm mại mịn màng suốt cả ngày. Công thức nhẹ nhàng, thẩm thấu nhanh.",
+    colors: [
+      "from-[#ED9717] via-[#c07a0e] to-[#a36402]",
+      "from-[#c07a0e] via-[#f2b350] to-[#ED9717]",
+      "from-[#a36402] via-[#ED9717] to-[#7d4b00]"
+    ],
+    benefits: [
+      "Cung cấp và khóa ẩm liên tục trong 24h, giữ cho làn da bé luôn mềm mịn như nhung.",
+      "Làm dịu vùng da bị nẻ, khô ráp, kích ứng do thời tiết hanh khô.",
+      "Thấm cực nhanh, không gây nhờn rít, bít tắc lỗ chân lông của bé.",
+      "Hương thơm thảo dược nhẹ dịu, giúp bé ngủ ngon và thư giãn hơn."
+    ],
+    ingredients: [
+      "Chiết xuất Yến Mạch Hữu Cơ: Khóa ẩm, làm dịu kích ứng và phục hồi màng bảo vệ da.",
+      "Dầu Hạt Hướng Dương & Dầu Quả Bơ: Giàu acid béo thiết yếu, tái tạo độ ẩm sâu.",
+      "Glycerin Thực Vật: Hút ẩm tự nhiên từ không khí để cung cấp liên tục cho da bé.",
+      "Chiết xuất Rau Má: Tăng tốc độ phục hồi các tổn thương nhỏ trên da.",
+      "Sản phẩm 5 KHÔNG: Không SLS/SLES, không cồn, không Paraben, không dầu khoáng, không hương liệu hóa học."
+    ],
+    usage: [
+      "Sau khi tắm sạch cho bé bằng nước ấm, lau khô người bằng khăn mềm.",
+      "Lấy một lượng vừa đủ sữa dưỡng thể ra lòng bàn tay và xoa ấm.",
+      "Thoa đều lên toàn bộ cơ thể bé (tay, chân, lưng, bụng).",
+      "Massage nhẹ nhàng theo chiều vuốt lên để kích thích tuần hoàn máu và giúp kem thấm sâu."
+    ]
+  }
+];
