@@ -39,7 +39,7 @@ export default function Header() {
           </p>
           <a
             href="tel:18001800"
-            className="flex items-center gap-2 text-[#ED9717] font-bold text-sm hover:text-yellow-300 transition-colors"
+            className="flex items-center gap-2 text-[#ED9717] font-bold text-sm hover:text-yellow-300 transition-colors rounded-lg"
           >
             <Phone size={14} />
             Hotline: 0398126895
@@ -98,14 +98,14 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <a
             href="tel:0398126895"
-            className="hidden md:flex items-center gap-2 bg-[#ED9717] text-white font-bold px-4 py-2 hover:bg-[#d4880f] transition-colors min-h-[44px]"
+            className="hidden md:flex items-center gap-2 bg-[#ED9717] text-white font-bold px-4 py-2 hover:bg-[#d4880f] transition-colors min-h-[44px] rounded-xl"
           >
             <Phone size={16} />
             <span className="text-sm">Đặt hàng ngay</span>
           </a>
           <button
             onClick={() => setIsCartOpen(true)}
-            className="relative p-2 text-[#5D8D4A] hover:text-[#6CA356] transition-colors cursor-pointer"
+            className="relative p-2 text-[#5D8D4A] hover:text-[#6CA356] transition-colors cursor-pointer rounded-full"
             aria-label="Giỏ hàng"
           >
             <ShoppingCart size={24} />
@@ -116,7 +116,7 @@ export default function Header() {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="lg:hidden p-2 text-[#5D8D4A]"
+            className="lg:hidden p-2 text-[#5D8D4A] rounded-lg"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >
@@ -166,7 +166,7 @@ export default function Header() {
           <div className="p-4">
             <a
               href="tel:0398126895"
-              className="flex items-center justify-center gap-2 bg-[#ED9717] text-white font-bold py-3 w-full hover:bg-[#d4880f] transition-colors"
+              className="flex items-center justify-center gap-2 bg-[#ED9717] text-white font-bold py-3 w-full hover:bg-[#d4880f] transition-colors rounded-xl"
             >
               <Phone size={18} />
               Gọi đặt hàng: 0398126895

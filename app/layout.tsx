@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/src/lib/cartContext";
 import CartDrawer from "@/src/components/cart/CartDrawer";
+import SmoothScroll from "@/src/components/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -108,6 +109,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[#EFFFE9] text-[#404041]">
+        <SmoothScroll />
         <CartProvider>
           {children}
           <CartDrawer />

@@ -40,7 +40,7 @@ export default function ProductFamily({ products = [] }: ProductFamilyProps) {
         <div className="text-center mt-10">
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 bg-[#5D8D4A] text-white font-bold px-8 py-3 hover:bg-[#6CA356] transition-colors min-h-[44px]"
+            className="inline-flex items-center gap-2 bg-[#5D8D4A] text-white font-bold px-8 py-3 hover:bg-[#6CA356] transition-colors min-h-[44px] rounded-xl"
           >
             Xem tất cả sản phẩm →
           </Link>

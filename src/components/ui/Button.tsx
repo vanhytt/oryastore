@@ -21,12 +21,12 @@ interface ButtonProps {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[#5D8D4A] text-white hover:bg-[#6CA356] active:bg-[#4A7A38] font-normal",
-  gold: "bg-[#ED9717] text-white hover:bg-[#d4880f] active:bg-[#c07a0e] font-bold",
+    "bg-[#5D8D4A] text-white hover:bg-[#6CA356] active:bg-[#4A7A38] font-normal rounded-xl",
+  gold: "bg-[#ED9717] text-white hover:bg-[#d4880f] active:bg-[#c07a0e] font-bold rounded-xl",
   outline:
-    "bg-transparent text-[#5D8D4A] border-2 border-[#5D8D4A] hover:bg-[#5D8D4A] hover:text-white font-bold",
+    "bg-transparent text-[#5D8D4A] border-2 border-[#5D8D4A] hover:bg-[#5D8D4A] hover:text-white font-bold rounded-xl",
   ghost:
-    "bg-transparent text-[#5D8D4A] hover:bg-[#F8F8F8] font-bold rounded-[50px]",
+    "bg-transparent text-[#5D8D4A] hover:bg-[#F8F8F8] font-bold rounded-xl",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -54,7 +54,7 @@ export default function Button({
       disabled={disabled}
       className={[
         "inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200",
-        "min-h-[44px] min-w-[44px]",
+        "min-h-[44px] min-w-[44px] rounded-xl",
         variantClasses[variant],
         sizeClasses[size],
         fullWidth ? "w-full" : "",

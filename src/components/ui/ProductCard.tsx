@@ -133,22 +133,22 @@ export default function ProductCard({
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 text-sm"
+            className="w-full whitespace-nowrap text-[13px] font-medium px-1.5 py-2 gap-1"
             onClick={() => router.push(productLink)}
-            icon={<Eye size={16} />}
+            icon={<Eye size={14} />}
           >
             Xem chi tiết
           </Button>
           <Button
             variant="gold"
             size="sm"
-            className="flex-1 text-sm"
+            className="w-full whitespace-nowrap text-[13px] font-medium px-1.5 py-2 gap-1"
             onClick={handleAddToCart}
-            icon={<ShoppingCart size={16} />}
+            icon={<ShoppingCart size={14} />}
           >
             Thêm giỏ hàng
           </Button>
