@@ -13,7 +13,6 @@ export default function SmoothScroll() {
       lerp: 0.08,
       infinite: false,
       gestureOrientation: "vertical",
-      normalizeWheel: true,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
