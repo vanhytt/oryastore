@@ -367,6 +367,22 @@ export async function getNews(): Promise<NewsItem[]> {
   return getLocalData<NewsItem>("orya_news", initialNews);
 }
 
+export async function getPublishedNews(): Promise<NewsItem[]> {
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .eq("status", "Published")
+      .order("created_at", { ascending: false });
+    if (!error && data) {
+      return data;
+    }
+    console.error("Supabase error getting published news, falling back to LocalStorage:", error);
+  }
+  const all = getLocalData<NewsItem>("orya_news", initialNews);
+  return all.filter((item) => item.status === "Published" || !item.status);
+}
+
 export async function createNews(news: Omit<NewsItem, "id" | "published_date">): Promise<NewsItem> {
   const today = new Date();
   const dateStr = `${today.getDate().toString().padStart(2, "0")}/${(today.getMonth() + 1).toString().padStart(2, "0")}/${today.getFullYear()}`;

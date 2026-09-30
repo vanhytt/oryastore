@@ -7,7 +7,7 @@ import QualityCertificates from "@/src/components/home/QualityCertificates";
 import NewsSection from "@/src/components/home/NewsSection";
 import PartnerLogos from "@/src/components/home/PartnerLogos";
 import Footer from "@/src/components/layout/Footer";
-import { getActiveProducts, getNews, getPartners } from "@/src/lib/dbService";
+import { getActiveProducts, getPublishedNews, getPartners } from "@/src/lib/dbService";
 
 export const metadata: Metadata = {
   title: "Orya — Chăm sóc da mẹ bầu & bé yêu | CVI Pharma",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [products, news, partners] = await Promise.all([getActiveProducts(), getNews(), getPartners()]);
+  const [products, news, partners] = await Promise.all([getActiveProducts(), getPublishedNews(), getPartners()]);
 
   return (
     <>
