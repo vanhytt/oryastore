@@ -9,6 +9,10 @@ import PartnerLogos from "@/src/components/home/PartnerLogos";
 import Footer from "@/src/components/layout/Footer";
 import { getActiveProducts, getPublishedNews, getPartners } from "@/src/lib/dbService";
 
+// Force dynamic rendering - disable SSR cache for fresh logo/banner
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Orya — Chăm sóc da mẹ bầu & bé yêu | CVI Pharma",
   description:

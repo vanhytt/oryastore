@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/src/lib/supabaseAdmin";
 
 const BUCKET = "orya-media";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/svg+xml": "svg",
+  "image/webp": "webp",
+};
 
 // ─── POST /api/admin/upload ───────────────────────────────
 // Nhận FormData với field "file", upload lên Supabase Storage
@@ -21,13 +28,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Không tìm thấy file" }, { status: 400 });
   }
 
+  const extension = IMAGE_EXTENSIONS[file.type];
+  if (!extension) {
+    return NextResponse.json(
+      { error: "Định dạng ảnh không được hỗ trợ. Vui lòng dùng PNG, SVG, WebP hoặc JPG." },
+      { status: 400 }
+    );
+  }
+  if (file.size > MAX_IMAGE_SIZE) {
+    return NextResponse.json(
+      { error: "Ảnh phải có dung lượng không quá 5MB." },
+      { status: 400 }
+    );
+  }
+
   // Tạo tên file duy nhất: timestamp_originalName
-  const ext = file.name.split(".").pop() ?? "jpg";
   const safeName = file.name
     .replace(/\.[^.]+$/, "")
     .replace(/[^a-zA-Z0-9_-]/g, "_")
     .substring(0, 50);
-  const filePath = `${Date.now()}_${safeName}.${ext}`;
+  const filePath = `${Date.now()}_${safeName || "image"}.${extension}`;
 
   // Chuyển File → ArrayBuffer → Buffer
   const arrayBuffer = await file.arrayBuffer();

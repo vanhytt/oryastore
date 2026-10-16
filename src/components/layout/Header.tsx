@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Phone, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { useCart } from "@/src/lib/cartContext";
 
@@ -23,9 +24,20 @@ export default function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { totalItems, setIsCartOpen } = useCart();
   const [mounted, setMounted] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>("/logo.png"); // Default logo
 
   useEffect(() => {
     setMounted(true);
+    // Fetch logo from API (not supabaseAdmin)
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.logo) setLogoUrl(data.logo);
+      })
+      .catch((err) => {
+        console.error("Error fetching logo:", err);
+        // Keep default logo on error
+      });
   }, []);
 
   return (
@@ -50,13 +62,13 @@ export default function Header() {
       {/* Main Header */}
       <div className="max-w-[1200px] mx-auto px-5 py-3 flex items-center justify-between gap-4">
         {/* Logo */}
-        <a href="/" className="flex items-center flex-shrink-0">
+        <Link href="/" className="flex items-center flex-shrink-0">
           <img
-            src="/logo.png"
+            src={logoUrl}
             alt="Orya Logo"
             className="h-12 w-auto object-contain block"
           />
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-1">

@@ -22,13 +22,13 @@ export default function NewsSection({ news }: NewsSectionProps) {
               Cập nhật từ Orya
             </h2>
           </div>
-          <a
+          <Link
             href="/tin-tuc"
             className="inline-flex items-center gap-2 text-[#5D8D4A] font-bold text-base hover:text-[#4A7A38] transition-colors"
           >
             Xem tất cả bài viết
             <ArrowRight size={18} />
-          </a>
+          </Link>
         </div>
 
         {/* Articles Grid */}

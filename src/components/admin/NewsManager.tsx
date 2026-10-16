@@ -79,10 +79,12 @@ export default function NewsManager({ onSuccess, onError, onUpdateStats }: NewsM
       setIsSubmitting(true);
       const payload = { title, cover_image: coverImage, content, excerpt, author, status };
       if (isSupabaseConfigured) {
-        editingNews ? await adminUpdateNews(editingNews.id, payload) : await adminCreateNews(payload);
+        if (editingNews) await adminUpdateNews(editingNews.id, payload);
+        else await adminCreateNews(payload);
       } else {
         const { createNews, updateNews } = await import("../../lib/dbService");
-        editingNews ? await updateNews(editingNews.id, payload) : await createNews(payload);
+        if (editingNews) await updateNews(editingNews.id, payload);
+        else await createNews(payload);
       }
       onSuccess(editingNews ? "Cập nhật bài viết thành công!" : "Thêm bài viết mới thành công!");
       setIsModalOpen(false);

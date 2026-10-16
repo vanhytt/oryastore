@@ -29,7 +29,8 @@ var SHEET_NAME = "Đơn hàng";
 /**
  * Xử lý request GET (dùng để test xem Web App đã hoạt động chưa)
  */
-function doGet(e) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Google Apps Script invokes this global handler.
+function doGet() {
   return ContentService.createTextOutput(
     JSON.stringify({ result: "success", message: "Google Apps Script is running!" })
   ).setMimeType(ContentService.MimeType.JSON);
@@ -39,6 +40,7 @@ function doGet(e) {
  * Xử lý request POST từ Next.js
  * Nhận dữ liệu JSON và ghi vào Google Sheet
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Google Apps Script invokes this global handler.
 function doPost(e) {
   try {
     // Parse JSON data từ request body

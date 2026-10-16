@@ -1,5 +1,10 @@
 import React from "react";
 import { CircleCheck, Award, Heart, Shield } from "lucide-react";
+import { getBrandStory } from "@/src/lib/getBrandStory";
+
+// Force dynamic rendering for real-time data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const highlights = [
   {
@@ -35,7 +40,9 @@ const stats = [
   { value: "98%", label: "Hài lòng" },
 ];
 
-export default function BrandStory() {
+export default async function BrandStory() {
+  const brandStory = await getBrandStory();
+
   return (
     <section className="py-16 md:py-20 bg-gradient-to-br from-[#F0F8FF] to-white overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5">
@@ -45,7 +52,7 @@ export default function BrandStory() {
             <div className="relative">
               <div className="w-full h-[420px] rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(36,85,143,0.15)]">
                 <img
-                  src="/about.jpg"
+                  src={brandStory.hero.mainImage}
                   alt="Về Orya"
                   className="w-full h-full object-cover block"
                 />
@@ -71,13 +78,10 @@ export default function BrandStory() {
               Câu chuyện thương hiệu
             </span>
             <h2 className="text-[#5D8D4A] font-bold text-3xl md:text-4xl leading-tight mb-5">
-              Orya — Nâng niu làn da mẹ &amp; bé từ thiên nhiên
+              {brandStory.hero.mainHeading}
             </h2>
             <p className="text-[#404041] text-base md:text-lg leading-7 mb-8">
-              Được nghiên cứu và phát triển bởi đội ngũ chuyên gia dược học hàng đầu tại
-              CVI Pharma, Orya mang đến giải pháp chăm sóc da toàn diện, an toàn và
-              hiệu quả cho mẹ bầu và trẻ sơ sinh. Mỗi sản phẩm là sự kết tinh từ tình
-              yêu thương và khoa học hiện đại.
+              {brandStory.hero.description1}
             </p>
 
             {/* Highlights */}

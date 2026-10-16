@@ -102,10 +102,12 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
         description, shortDescription, image: primaryImage || images[0] || "", images, primaryImage,
       };
       if (isSupabaseConfigured) {
-        editingProduct ? await adminUpdateProduct(editingProduct.id, payload) : await adminCreateProduct(payload);
+        if (editingProduct) await adminUpdateProduct(editingProduct.id, payload);
+        else await adminCreateProduct(payload);
       } else {
         const { createProduct, updateProduct } = await import("../../lib/dbService");
-        editingProduct ? await updateProduct(editingProduct.id, payload) : await createProduct(payload);
+        if (editingProduct) await updateProduct(editingProduct.id, payload);
+        else await createProduct(payload);
       }
       onSuccess(editingProduct ? "Cập nhật sản phẩm thành công!" : "Thêm sản phẩm mới thành công!");
       setIsModalOpen(false);

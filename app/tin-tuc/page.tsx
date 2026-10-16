@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Calendar, User, Search, BookOpen, ArrowRight, Tag } from "lucide-react";
+import { Calendar, User, Search, ArrowRight } from "lucide-react";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
 import { getNews, NewsItem } from "@/src/lib/dbService";
@@ -159,7 +159,7 @@ export default function NewsListPage() {
               <div className="text-5xl mb-4">🔍</div>
               <h3 className="text-lg font-bold text-stone-700 mb-2">Không tìm thấy bài viết</h3>
               <p className="text-stone-500 max-w-md mx-auto text-sm">
-                Không tìm thấy kết quả phù hợp với từ khóa "{searchTerm}" hoặc danh mục đã chọn. Vui lòng thử lại với từ khóa khác.
+                Không tìm thấy kết quả phù hợp với từ khóa &quot;{searchTerm}&quot; hoặc danh mục đã chọn. Vui lòng thử lại với từ khóa khác.
               </p>
             </div>
           ) : (

@@ -16,7 +16,6 @@ import {
   Heart
 } from "lucide-react";
 import { Product } from "@/src/lib/dbService";
-import Button from "@/src/components/ui/Button";
 import { normalizeCartPrice, resolveCartImage, useCart } from "@/src/lib/cartContext";
 
 interface ProductDetailProps {

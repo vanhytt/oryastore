@@ -68,10 +68,12 @@ export default function PartnerManager({ onSuccess, onError, onUpdateStats }: Pa
       setIsSubmitting(true);
       const payload = { name, logo, link };
       if (isSupabaseConfigured) {
-        editingPartner ? await adminUpdatePartner(editingPartner.id, payload) : await adminCreatePartner(payload);
+        if (editingPartner) await adminUpdatePartner(editingPartner.id, payload);
+        else await adminCreatePartner(payload);
       } else {
         const { createPartner, updatePartner } = await import("../../lib/dbService");
-        editingPartner ? await updatePartner(editingPartner.id, payload) : await createPartner(payload);
+        if (editingPartner) await updatePartner(editingPartner.id, payload);
+        else await createPartner(payload);
       }
       onSuccess(editingPartner ? "Cập nhật đối tác thành công!" : "Thêm đối tác mới thành công!");
       setIsModalOpen(false);

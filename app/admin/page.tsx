@@ -7,6 +7,10 @@ import { getProducts, getNews, getPartners } from "@/src/lib/dbService";
 import ProductManager from "@/src/components/admin/ProductManager";
 import NewsManager from "@/src/components/admin/NewsManager";
 import PartnerManager from "@/src/components/admin/PartnerManager";
+import SiteSettingsManager from "@/src/components/admin/SiteSettingsManager";
+import BrandStoryManager from "@/src/components/admin/BrandStoryManager";
+import CertificateManager from "@/src/components/admin/CertificateManager";
+import FooterManager from "@/src/components/admin/FooterManager";
 import ToastNotification from "@/src/components/admin/ToastNotification";
 import {
   ShoppingBag,
@@ -16,10 +20,13 @@ import {
   ArrowLeft,
   LayoutDashboard,
   ShieldCheck,
-  ServerCrash
+  ServerCrash,
+  Settings,
+  BookOpen,
+  Award
 } from "lucide-react";
 
-type TabType = "dashboard" | "products" | "news" | "partners";
+type TabType = "dashboard" | "products" | "news" | "partners" | "site-settings" | "brand-story" | "certificates" | "footer-settings";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
@@ -123,6 +130,50 @@ export default function AdminPage() {
           >
             <Users size={18} />
             Đối tác phân phối
+          </button>
+          <button
+            onClick={() => setActiveTab("site-settings")}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
+              activeTab === "site-settings"
+                ? "bg-[#5D8D4A]/10 text-[#5D8D4A]"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            }`}
+          >
+            <Settings size={18} />
+            Cài đặt trang web
+          </button>
+          <button
+            onClick={() => setActiveTab("brand-story")}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
+              activeTab === "brand-story"
+                ? "bg-[#5D8D4A]/10 text-[#5D8D4A]"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            }`}
+          >
+            <BookOpen size={18} />
+            Câu chuyện TH
+          </button>
+          <button
+            onClick={() => setActiveTab("certificates")}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
+              activeTab === "certificates"
+                ? "bg-[#5D8D4A]/10 text-[#5D8D4A]"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            }`}
+          >
+            <Award size={18} />
+            Chứng nhận
+          </button>
+          <button
+            onClick={() => setActiveTab("footer-settings")}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
+              activeTab === "footer-settings"
+                ? "bg-[#5D8D4A]/10 text-[#5D8D4A]"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            }`}
+          >
+            <ShieldCheck size={18} />
+            Cài đặt chân trang
           </button>
         </nav>
 
@@ -266,6 +317,31 @@ export default function AdminPage() {
               onError={(msg) => triggerToast(msg, "error")}
               onUpdateStats={updateStats}
             />
+          )}
+
+          {activeTab === "site-settings" && (
+            <SiteSettingsManager
+              onSuccess={(msg) => triggerToast(msg, "success")}
+              onError={(msg) => triggerToast(msg, "error")}
+            />
+          )}
+
+          {activeTab === "brand-story" && (
+            <BrandStoryManager
+              onSuccess={(msg) => triggerToast(msg, "success")}
+              onError={(msg) => triggerToast(msg, "error")}
+            />
+          )}
+
+          {activeTab === "certificates" && (
+            <CertificateManager
+              onSuccess={(msg) => triggerToast(msg, "success")}
+              onError={(msg) => triggerToast(msg, "error")}
+            />
+          )}
+
+          {activeTab === "footer-settings" && (
+            <FooterManager />
           )}
         </div>
       </main>

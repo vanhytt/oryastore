@@ -187,3 +187,91 @@ export async function adminDeletePartner(id: string | number): Promise<void> {
     throw new Error((err as { error?: string }).error ?? "Xóa đối tác thất bại");
   }
 }
+
+// ─── SETTINGS ───────────────────────────────────────────
+
+export async function adminGetSettings() {
+  const res = await fetch("/api/admin/settings");
+  if (!res.ok) throw new Error("Không thể tải cài đặt");
+  return res.json();
+}
+
+export async function adminUpdateSetting(key: string, value: string | null, data?: any) {
+  const res = await fetch("/api/admin/settings", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key, value, data }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).error ?? "Cập nhật cài đặt thất bại");
+  }
+  return res.json();
+}
+
+// ─── CERTIFICATES ───────────────────────────────────────
+
+export async function adminGetCertificates() {
+  const res = await fetch("/api/admin/certificates");
+  if (!res.ok) throw new Error("Không thể tải danh sách chứng nhận");
+  return res.json();
+}
+
+export async function adminCreateCertificate(cert: any) {
+  const res = await fetch("/api/admin/certificates", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cert),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).error ?? "Thêm chứng nhận thất bại");
+  }
+  return res.json();
+}
+
+export async function adminUpdateCertificate(id: string, cert: any) {
+  const res = await fetch("/api/admin/certificates", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, ...cert }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).error ?? "Cập nhật chứng nhận thất bại");
+  }
+  return res.json();
+}
+
+export async function adminDeleteCertificate(id: string) {
+  const res = await fetch("/api/admin/certificates", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).error ?? "Xóa chứng nhận thất bại");
+  }
+}
+
+// ─── FOOTER SETTINGS ────────────────────────────────────
+
+export async function adminGetFooterSettings() {
+  const res = await fetch("/api/admin/footer-settings");
+  if (!res.ok) throw new Error("Không thể tải cài đặt chân trang");
+  return res.json();
+}
+
+export async function adminUpdateFooterSetting(key: string, value: string | null, label?: string) {
+  const res = await fetch("/api/admin/footer-settings", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key, value, label }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).error ?? "Cập nhật cài đặt chân trang thất bại");
+  }
+  return res.json();
+}

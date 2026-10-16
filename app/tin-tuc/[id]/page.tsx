@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar, User, ArrowLeft, Tag, BookOpen, ChevronRight } from "lucide-react";
+import { Calendar, User, ArrowLeft, ChevronRight } from "lucide-react";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
 import { getNews, NewsItem } from "@/src/lib/dbService";

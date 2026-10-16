@@ -5,6 +5,10 @@ import { CartProvider } from "@/src/lib/cartContext";
 import CartDrawer from "@/src/components/cart/CartDrawer";
 import SmoothScroll from "@/src/components/SmoothScroll";
 
+// Force dynamic rendering - disable SSR cache for fresh data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
