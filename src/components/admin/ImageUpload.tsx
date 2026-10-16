@@ -32,19 +32,10 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
     setIsUploading(true);
 
     try {
-      // Thử upload lên Supabase Storage qua API Route
       const url = await uploadImage(file);
       onChange(url);
-    } catch {
-      // Nếu Supabase chưa cấu hình hoặc lỗi, fallback sang Base64
-      console.warn("Upload lên Supabase thất bại, dùng Base64 fallback");
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          onChange(e.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Không thể tải ảnh lên Supabase.");
     } finally {
       setIsUploading(false);
     }
@@ -113,9 +104,7 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-700 truncate">
-                  {value.startsWith("data:")
-                    ? "Ảnh tải lên (Base64 – chưa kết nối Supabase)"
-                    : "Ảnh đã tải lên Supabase Storage"}
+                  Ảnh đã lưu
                 </p>
                 <p className="text-[10px] text-gray-400 truncate max-w-full">
                   {value.startsWith("data:")

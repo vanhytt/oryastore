@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/src/lib/supabaseAdmin";
+
+function revalidateCertificatePages() {
+  revalidatePath("/");
+}
 
 // ─── GET /api/admin/certificates ────────────────────────
 export async function GET() {
@@ -32,18 +37,18 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, description, image_url, sort_order } = body;
+  const { title, description, image_url, sort_order } = body;
 
-  if (!name) {
+  if (!title) {
     return NextResponse.json(
-      { error: "Tên chứng nhận là bắt buộc" },
+      { error: "Tiêu đề chứng nhận là bắt buộc" },
       { status: 400 }
     );
   }
 
   const { data, error } = await supabaseAdmin
     .from("certificates")
-    .insert([{ name, description, image_url, sort_order: sort_order || 0 }])
+    .insert([{ title, description, image_url, sort_order: sort_order || 0 }])
     .select()
     .single();
 
@@ -51,6 +56,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateCertificatePages();
   return NextResponse.json(data);
 }
 
@@ -64,7 +70,7 @@ export async function PUT(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { id, name, description, image_url, sort_order } = body;
+  const { id, title, description, image_url, sort_order } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -72,7 +78,7 @@ export async function PUT(req: NextRequest) {
 
   const { data, error } = await supabaseAdmin
     .from("certificates")
-    .update({ name, description, image_url, sort_order })
+    .update({ title, description, image_url, sort_order })
     .eq("id", id)
     .select()
     .single();
@@ -81,6 +87,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateCertificatePages();
   return NextResponse.json(data);
 }
 
@@ -109,5 +116,6 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateCertificatePages();
   return NextResponse.json({ success: true });
 }

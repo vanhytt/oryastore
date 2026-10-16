@@ -5,13 +5,25 @@ import PolicyModal from "@/src/components/layout/PolicyModal";
 
 export default async function Footer() {
   const data = await getFooterSettings();
-  const configuredLogo = data.brand.logo_url?.trim();
+  const configuredLogo = data?.brand.logo_url?.trim();
   const logoSrc = configuredLogo && (
     configuredLogo.startsWith("https://") ||
     (configuredLogo.startsWith("/") && !configuredLogo.startsWith("//"))
   )
     ? configuredLogo
     : "/logofooter.png";
+  const products = data?.products?.filter((link) => link.label && link.url) ?? [];
+  const infoLinks = data?.links?.info_menu?.filter((link) => link.label && link.url) ?? [];
+  const policies = data?.links?.policy_menu?.filter(
+    (policy) => policy.label && policy.content?.trim(),
+  ) ?? [];
+  const hasContact = Boolean(
+    data?.contact?.phone ||
+    data?.contact?.email ||
+    data?.contact?.address ||
+    data?.contact?.tax_id ||
+    data?.contact?.working_hours,
+  );
 
   return (
     <footer className="bg-[#5D8D4A] text-white">
@@ -29,9 +41,9 @@ export default async function Footer() {
                 className="h-12 w-auto mb-5"
               />
             </Link>
-            <p className="text-white/90 mb-5">
-              {data?.brand?.description || "Sản phẩm chăm sóc da chuyên biệt dành cho mẹ bầu và trẻ em."}
-            </p>
+            {data?.brand?.description && (
+              <p className="text-white/90 mb-5">{data.brand.description}</p>
+            )}
             {data?.brand?.cgmp_text && (
               <p className="text-white/90 mb-5">{data.brand.cgmp_text}</p>
             )}
@@ -111,114 +123,128 @@ export default async function Footer() {
           </div>
 
           {/* ===== COLUMN 2: Products ===== */}
-          <div>
-            <h3 className="font-bold text-lg text-white mb-4 pb-2 border-b border-[#6CA356]">
-              Sản phẩm
-            </h3>
-            <ul className="space-y-2">
-              {data?.products?.map((link) => (
-                <li key={link.id}>
-                  <a
-                    href={link.url}
-                    className="text-white/90 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {products.length > 0 && (
+              <div>
+                <h3 className="font-bold text-lg text-white mb-4 pb-2 border-b border-[#6CA356]">
+                  Sản phẩm
+                </h3>
+                <ul className="space-y-2">
+                  {products.map((link) => (
+                    <li key={link.id}>
+                      <a
+                        href={link.url}
+                        className="text-white/90 hover:text-white transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+          )}
 
           {/* ===== COLUMN 3: Info & Policy Links ===== */}
-          <div>
-            <h3 className="font-bold text-lg text-white mb-4 pb-2 border-b border-[#6CA356]">
-              Thông tin
-            </h3>
-            <ul className="space-y-2">
-              {data?.links?.info_menu?.map((link) => (
-                <li key={link.id}>
-                  <a
-                    href={link.url}
-                    className="text-white/90 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <h3 className="font-bold text-lg text-white mt-6 mb-4 pb-2 border-b border-[#6CA356]">
-              Chính sách
-            </h3>
-            <PolicyModal policies={data?.links?.policy_menu ?? []} />
-          </div>
+          {(infoLinks.length > 0 || policies.length > 0) && (
+              <div>
+                {infoLinks.length > 0 && (
+                  <>
+                    <h3 className="font-bold text-lg text-white mb-4 pb-2 border-b border-[#6CA356]">
+                      Thông tin
+                    </h3>
+                    <ul className="space-y-2">
+                      {infoLinks.map((link) => (
+                        <li key={link.id}>
+                          <a
+                            href={link.url}
+                            className="text-white/90 hover:text-white transition-colors"
+                          >
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {policies.length > 0 && (
+                  <>
+                    <h3 className="font-bold text-lg text-white mt-6 mb-4 pb-2 border-b border-[#6CA356]">
+                      Chính sách
+                    </h3>
+                    <PolicyModal policies={policies} />
+                  </>
+                )}
+              </div>
+          )}
 
           {/* ===== COLUMN 4: Contact Info ===== */}
-          <div>
-            <h3 className="font-bold text-lg text-white mb-4 pb-2 border-b border-[#6CA356]">
-              Liên hệ
-            </h3>
-            <ul className="space-y-3 text-white/90">
-              {data?.contact?.phone && (
-                <li className="flex items-start gap-2">
-                  <Phone className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <a
-                    href={`tel:${data.contact.phone}`}
-                    className="hover:text-white transition-colors"
-                  >
-                    {data.contact.phone}
-                  </a>
-                </li>
-              )}
+          {hasContact && (
+              <div>
+                <h3 className="font-bold text-lg text-white mb-4 pb-2 border-b border-[#6CA356]">
+                  Liên hệ
+                </h3>
+                <ul className="space-y-3 text-white/90">
+                  {data?.contact?.phone && (
+                    <li className="flex items-start gap-2">
+                      <Phone className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <a
+                        href={`tel:${data.contact.phone}`}
+                        className="hover:text-white transition-colors"
+                      >
+                        {data.contact.phone}
+                      </a>
+                    </li>
+                  )}
 
-              {data?.contact?.email && (
-                <li className="flex items-start gap-2">
-                  <Mail className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <a
-                    href={`mailto:${data.contact.email}`}
-                    className="hover:text-white transition-colors break-all"
-                  >
-                    {data.contact.email}
-                  </a>
-                </li>
-              )}
+                  {data?.contact?.email && (
+                    <li className="flex items-start gap-2">
+                      <Mail className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <a
+                        href={`mailto:${data.contact.email}`}
+                        className="hover:text-white transition-colors break-all"
+                      >
+                        {data.contact.email}
+                      </a>
+                    </li>
+                  )}
 
-              {data?.contact?.address && (
-                <li className="flex items-start gap-2">
-                  <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <span>{data.contact.address}</span>
-                </li>
-              )}
+                  {data?.contact?.address && (
+                    <li className="flex items-start gap-2">
+                      <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <span>{data.contact.address}</span>
+                    </li>
+                  )}
 
-              {data?.contact?.tax_id && (
-                <li className="flex items-start gap-2">
-                  <span className="font-semibold">MST:</span>
-                  <span>{data.contact.tax_id}</span>
-                </li>
+                  {data?.contact?.tax_id && (
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold">MST:</span>
+                      <span>{data.contact.tax_id}</span>
+                    </li>
+                  )}
+                </ul>
+                {data?.contact?.working_hours && (
+                  <div className="mt-4 text-white/90">
+                    <p className="font-semibold mb-1">Giờ làm việc:</p>
+                    <p>{data.contact.working_hours}</p>
+                  </div>
               )}
-            </ul>
-            {data?.contact?.working_hours && (
-              <div className="mt-4 text-white/90">
-                <p className="font-semibold mb-1">Giờ làm việc:</p>
-                <p>{data.contact.working_hours}</p>
               </div>
+          )}
+
+        </div>
+
+      </div>
+      {(data?.brand?.copyright || data?.footer_bottom?.disclaimer) && (
+        <div className="border-t border-white/10 bg-[#3F7734]">
+          <div className="mx-auto flex max-w-[1200px] flex-col gap-2 px-5 py-3 text-xs leading-5 text-white/85 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            {data?.brand?.copyright && <p className="sm:whitespace-nowrap">{data.brand.copyright}</p>}
+            {data?.footer_bottom?.disclaimer && (
+              <p className="sm:max-w-[58%] sm:text-right">
+                {data.footer_bottom.disclaimer}
+              </p>
             )}
           </div>
-
         </div>
-
-      </div>
-      <div className="border-t border-white/10 bg-[#3F7734]">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-2 px-5 py-3 text-xs leading-5 text-white/85 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <p className="sm:whitespace-nowrap">
-            {data?.brand?.copyright || "© 2026 Orya Babycare. All rights reserved."}
-          </p>
-          {data?.footer_bottom?.disclaimer && (
-            <p className="sm:max-w-[58%] sm:text-right">
-              {data.footer_bottom.disclaimer}
-            </p>
-          )}
-        </div>
-      </div>
+      )}
     </footer>
   );
 }

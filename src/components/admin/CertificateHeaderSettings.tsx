@@ -33,10 +33,10 @@ export default function CertificateHeaderSettings({
     try {
       setLoading(true);
       const data = await getCertificatesHeader();
-      setBadge(data.badge);
-      setTitle(data.title);
-      setDescription(data.description);
-      setBottomTags(data.bottomTags);
+      setBadge(data?.badge ?? "");
+      setTitle(data?.title ?? "");
+      setDescription(data?.description ?? "");
+      setBottomTags(data?.bottomTags ?? []);
     } catch (err) {
       onError("Không thể tải cấu hình!");
       console.error(err);

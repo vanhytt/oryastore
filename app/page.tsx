@@ -34,14 +34,6 @@ export const metadata: Metadata = {
     title: "Orya — Chăm sóc da mẹ bầu & bé yêu | CVI Pharma",
     description:
       "Thương hiệu mỹ phẩm thiên nhiên chuyên biệt cho mẹ bầu và bé yêu. Dầu rạn da, kem bôi ngực sau sinh, dưỡng thể baby an toàn từ CVI Pharma.",
-    images: [
-      {
-        url: "/banner.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Orya - Mỹ phẩm chăm sóc da mẹ bầu và bé yêu",
-      },
-    ],
   },
 };
 

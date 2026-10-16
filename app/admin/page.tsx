@@ -9,8 +9,10 @@ import NewsManager from "@/src/components/admin/NewsManager";
 import PartnerManager from "@/src/components/admin/PartnerManager";
 import SiteSettingsManager from "@/src/components/admin/SiteSettingsManager";
 import BrandStoryManager from "@/src/components/admin/BrandStoryManager";
+import HomeBrandStoryManager from "@/src/components/admin/HomeBrandStoryManager";
 import CertificateManager from "@/src/components/admin/CertificateManager";
 import FooterManager from "@/src/components/admin/FooterManager";
+import TopBarManager from "@/src/components/admin/TopBarManager";
 import ToastNotification from "@/src/components/admin/ToastNotification";
 import {
   ShoppingBag,
@@ -23,14 +25,15 @@ import {
   ServerCrash,
   Settings,
   BookOpen,
-  Award
+  Award,
+  House,
 } from "lucide-react";
 
-type TabType = "dashboard" | "products" | "news" | "partners" | "site-settings" | "brand-story" | "certificates" | "footer-settings";
+type TabType = "dashboard" | "products" | "news" | "partners" | "site-settings" | "brand-story" | "home-brand-story" | "certificates" | "footer-settings" | "topbar-settings";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
-  const [dbConnected, setDbConnected] = useState(false);
+  const [dbConnected] = useState(isSupabaseConfigured);
 
   // Statistics
   const [stats, setStats] = useState({
@@ -62,8 +65,10 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    setDbConnected(isSupabaseConfigured);
-    updateStats();
+    const timer = window.setTimeout(() => {
+      void updateStats();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -143,6 +148,17 @@ export default function AdminPage() {
             Cài đặt trang web
           </button>
           <button
+            onClick={() => setActiveTab("topbar-settings")}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
+              activeTab === "topbar-settings"
+                ? "bg-[#5D8D4A]/10 text-[#5D8D4A]"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            }`}
+          >
+            <Settings size={18} />
+            Thanh thông báo
+          </button>
+          <button
             onClick={() => setActiveTab("brand-story")}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
               activeTab === "brand-story"
@@ -152,6 +168,17 @@ export default function AdminPage() {
           >
             <BookOpen size={18} />
             Câu chuyện TH
+          </button>
+          <button
+            onClick={() => setActiveTab("home-brand-story")}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-sm font-bold transition-all cursor-pointer ${
+              activeTab === "home-brand-story"
+                ? "bg-[#5D8D4A]/10 text-[#5D8D4A]"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            }`}
+          >
+            <House size={18} />
+            Câu chuyện Trang chủ
           </button>
           <button
             onClick={() => setActiveTab("certificates")}
@@ -210,6 +237,8 @@ export default function AdminPage() {
             {activeTab === "products" && "Quản lý sản phẩm"}
             {activeTab === "news" && "Quản lý tin bài"}
             {activeTab === "partners" && "Đối tác phân phối"}
+            {activeTab === "home-brand-story" && "Câu chuyện thương hiệu Trang chủ"}
+            {activeTab === "topbar-settings" && "Quản lý Thanh thông báo"}
           </h2>
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 bg-[#5D8D4A] rounded-full animate-pulse"></span>
@@ -326,8 +355,22 @@ export default function AdminPage() {
             />
           )}
 
+          {activeTab === "topbar-settings" && (
+            <TopBarManager
+              onSuccess={(msg) => triggerToast(msg, "success")}
+              onError={(msg) => triggerToast(msg, "error")}
+            />
+          )}
+
           {activeTab === "brand-story" && (
             <BrandStoryManager
+              onSuccess={(msg) => triggerToast(msg, "success")}
+              onError={(msg) => triggerToast(msg, "error")}
+            />
+          )}
+
+          {activeTab === "home-brand-story" && (
+            <HomeBrandStoryManager
               onSuccess={(msg) => triggerToast(msg, "success")}
               onError={(msg) => triggerToast(msg, "error")}
             />

@@ -41,13 +41,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     product.primaryImage ||
     product.image_url ||
     product.image ||
-    (product.images && product.images[0]) ||
-    "/banner.jpg";
+    product.images?.[0];
 
   const description =
     product.shortDescription ||
     product.description?.slice(0, 160) ||
-    `${product.name} - Sản phẩm chăm sóc da chuyên biệt từ Orya Natural, an toàn cho mẹ bầu và bé yêu.`;
+    "";
 
   const canonicalPath = product.slug
     ? `/san-pham/${product.slug}`
@@ -72,20 +71,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `${BASE_URL}${canonicalPath}`,
       type: "website",
-      images: [
+      ...(productImage ? { images: [
         {
           url: productImage.startsWith("http") ? productImage : `${BASE_URL}${productImage}`,
           width: 800,
           height: 800,
           alt: `${product.name} - Orya Natural`,
         },
-      ],
+      ] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: `${product.name} - Orya Natural`,
       description,
-      images: [productImage.startsWith("http") ? productImage : `${BASE_URL}${productImage}`],
+      ...(productImage ? { images: [productImage.startsWith("http") ? productImage : `${BASE_URL}${productImage}`] } : {}),
     },
   };
 }
@@ -103,21 +102,19 @@ export default async function ProductPage({ params }: PageProps) {
     product.primaryImage ||
     product.image_url ||
     product.image ||
-    (product.images && product.images[0]) ||
-    "/banner.jpg";
+    product.images?.[0];
 
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: productImage.startsWith("http") ? productImage : `${BASE_URL}${productImage}`,
+    ...(productImage ? { image: productImage.startsWith("http") ? productImage : `${BASE_URL}${productImage}` } : {}),
     description:
       product.shortDescription ||
-      product.description?.slice(0, 300) ||
-      product.name,
+      product.description?.slice(0, 300) || "",
     brand: {
       "@type": "Brand",
-      name: product.brand || "Orya",
+      name: product.brand ?? "",
     },
     offers: {
       "@type": "Offer",

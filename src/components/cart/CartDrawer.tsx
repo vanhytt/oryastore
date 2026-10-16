@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { X, Trash2, Minus, Plus, ShoppingBag, ArrowRight } from "lucide-react";
-import { DEFAULT_CART_IMAGE, useCart } from "@/src/lib/cartContext";
+import { useCart } from "@/src/lib/cartContext";
 import { useRouter } from "next/navigation";
 
 export default function CartDrawer() {
@@ -21,19 +21,19 @@ export default function CartDrawer() {
 
   // Close on ESC key
   useEffect(() => {
+    if (!isCartOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsCartOpen(false);
       }
     };
-    if (isCartOpen) {
-      document.body.style.overflow = "hidden";
-      window.addEventListener("keydown", handleKeyDown);
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isCartOpen, setIsCartOpen]);
@@ -106,23 +106,18 @@ export default function CartDrawer() {
                   key={item.id}
                   className="flex items-start gap-4 p-3 rounded-xl border border-gray-100 hover:border-[#5D8D4A]/20 transition-all bg-white shadow-sm"
                 >
-                  <div className="w-20 h-20 shrink-0 rounded-lg border border-gray-100 overflow-hidden bg-[#EFFFE9]">
-                    <img
-                      src={item.image || DEFAULT_CART_IMAGE}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
+                  {item.image && (
+                    <div className="w-20 h-20 shrink-0 rounded-lg border border-gray-100 overflow-hidden bg-[#EFFFE9]">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  )}
 
                   {/* Product details */}
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-bold text-[#404041] leading-tight truncate mb-1">
                       {item.name}
                     </h4>
-                    <p className="text-xs text-[#5D8D4A] font-medium mb-1.5">
-                      {item.category || "Orya Natural"}
-                    </p>
+                    {item.category && <p className="text-xs text-[#5D8D4A] font-medium mb-1.5">{item.category}</p>}
                     <p className="text-xs text-gray-500 mb-2.5">
                       Đơn giá: {formatPrice(item.price)}
                     </p>

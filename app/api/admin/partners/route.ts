@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/src/lib/supabaseAdmin";
+
+function revalidatePartnerPages() {
+  revalidatePath("/");
+}
 
 // ─── GET /api/admin/partners ──────────────────────────────
 export async function GET() {
@@ -37,6 +42,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidatePartnerPages();
   return NextResponse.json(data, { status: 201 });
 }
 
@@ -63,6 +69,7 @@ export async function PUT(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidatePartnerPages();
   return NextResponse.json(data);
 }
 
@@ -77,5 +84,6 @@ export async function DELETE(req: NextRequest) {
 
   const { error } = await supabaseAdmin.from("partners").delete().eq("id", body.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidatePartnerPages();
   return NextResponse.json({ success: true });
 }

@@ -11,19 +11,9 @@ interface TimelineProps {
 }
 
 export default function Timeline({ items }: TimelineProps) {
-  const defaultItems: TimelineItem[] = [
-    {
-      period: '2020',
-      title: 'Thành lập',
-      description: 'Orya được sáng lập bởi các chuyên gia dược học'
-    }
-  ];
-
-  const displayItems = items && items.length > 0 ? items : defaultItems;
-
   return (
     <>
-      {displayItems.map((item, index) => {
+      {items?.map((item, index) => {
         const isEven = index % 2 === 0;
         
         return (

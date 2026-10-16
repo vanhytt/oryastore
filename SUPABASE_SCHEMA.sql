@@ -31,8 +31,15 @@ CREATE TABLE IF NOT EXISTS public.products (
     description     TEXT,
     short_description TEXT,
     image           TEXT,                     -- URL ảnh từ Supabase Storage
+    images          TEXT[]  NOT NULL DEFAULT '{}',
+    primary_image   TEXT,
+    slug            TEXT,
+    brand           TEXT,
+    colors          TEXT[]  NOT NULL DEFAULT '{}',
     benefits        TEXT[]  DEFAULT '{}',
-    ingredients     TEXT[]  DEFAULT '{}',
+    uses            TEXT,
+    ingredients     TEXT,
+    usage_instructions TEXT,
     usage           TEXT[]  DEFAULT '{}',
     is_active       BOOLEAN NOT NULL DEFAULT true,
     sort_order      INTEGER DEFAULT 0,
@@ -237,7 +244,7 @@ CREATE POLICY "storage_admin_delete"
 -- Bạn có thể bỏ qua phần này nếu muốn nhập dữ liệu thật
 -- trực tiếp từ trang Admin.
 
-INSERT INTO public.products (name, category, price, price_value, original_price, original_price_value, badge, rating, reviews_count, short_description, description, benefits, ingredients, usage)
+INSERT INTO public.products (name, category, price, price_value, original_price, original_price_value, badge, rating, reviews_count, short_description, description, benefits, uses, ingredients, usage_instructions, usage)
 VALUES
 (
   'Dầu rạn da Orya cho mẹ bầu', 'mom',
@@ -246,7 +253,9 @@ VALUES
   'Dầu massage ngăn ngừa và giảm rạn da cho mẹ bầu. Chiết xuất 100% từ thảo dược thiên nhiên.',
   'Dầu massage chuyên biệt ngăn ngừa và làm mờ các vết rạn da trong suốt thai kỳ và sau sinh. Chiết xuất 100% từ thảo dược thiên nhiên, an toàn tuyệt đối cho mẹ và bé.',
   ARRAY['Ngăn ngừa tối đa sự hình thành của các vết rạn nứt da mới.', 'Hỗ trợ làm mờ các vết rạn nứt cũ và giúp đều màu da.'],
-  ARRAY['Dầu Hạnh Nhân Ngọt: Dưỡng ẩm sâu, tăng sản xuất collagen tự nhiên.', 'Dầu Jojoba Hữu Cơ: Cân bằng tuyến bã nhờn, thấm cực nhanh.'],
+  E'Ngăn ngừa tối đa sự hình thành của các vết rạn nứt da mới.\nHỗ trợ làm mờ các vết rạn nứt cũ và giúp đều màu da.',
+  E'Dầu Hạnh Nhân Ngọt: Dưỡng ẩm sâu, tăng sản xuất collagen tự nhiên.\nDầu Jojoba Hữu Cơ: Cân bằng tuyến bã nhờn, thấm cực nhanh.',
+  E'Làm sạch và lau khô vùng da cần massage.\nThoa đều và massage nhẹ nhàng 5-10 phút.',
   ARRAY['Làm sạch và lau khô vùng da cần massage.', 'Thoa đều và massage nhẹ nhàng 5-10 phút.']
 ),
 (
@@ -256,7 +265,9 @@ VALUES
   'Kem dưỡng da ngực chuyên biệt sau sinh, giúp phục hồi và săn chắc da.',
   'Kem dưỡng da vùng ngực chuyên biệt dành cho phụ nữ sau sinh. Giúp dưỡng ẩm, làm dịu da ngực khô ráp, phục hồi và cải thiện độ săn chắc.',
   ARRAY['Làm dịu nhanh tình trạng đau rát', 'Cải thiện độ đàn hồi săn chắc'],
-  ARRAY['Mỡ cừu Lanolin', 'Bơ hạt mỡ', 'Cúc La Mã'],
+  E'Làm dịu nhanh tình trạng đau rát\nCải thiện độ đàn hồi săn chắc',
+  E'Mỡ cừu Lanolin\nBơ hạt mỡ\nCúc La Mã',
+  'Thoa đều núm vú và bầu ngực sau cữ bú',
   ARRAY['Thoa đều núm vú và bầu ngực sau cữ bú']
 ),
 (
@@ -266,7 +277,9 @@ VALUES
   'Nước tắm gội 2 trong 1 dành cho trẻ sơ sinh và trẻ nhỏ. pH cân bằng 5.5, không SLS.',
   'Nước tắm gội 2 trong 1 dành cho trẻ sơ sinh và trẻ nhỏ. pH cân bằng 5.5, không SLS, không cồn, không gây kích ứng.',
   ARRAY['Làm sạch nhẹ nhàng, dịu lành cho da bé', 'Không gây cay mắt'],
-  ARRAY['Nha Đam Hữu Cơ', 'Chiết xuất Yến Mạch'],
+  E'Làm sạch nhẹ nhàng, dịu lành cho da bé\nKhông gây cay mắt',
+  E'Nha Đam Hữu Cơ\nChiết xuất Yến Mạch',
+  'Thoa lên tóc và da bé, massage nhẹ nhàng, sau đó tráng sạch bằng nước ấm.',
   ARRAY['Thoa lên tóc và da bé, massage nhẹ nhàng, sau đó tráng sạch bằng nước ấm.']
 ),
 (
@@ -276,7 +289,9 @@ VALUES
   'Kem dưỡng ẩm toàn thân cho bé, giúp da mềm mại mịn màng suốt cả ngày.',
   'Kem dưỡng ẩm toàn thân cho bé, giúp da mềm mại mịn màng suốt cả ngày. Công thức nhẹ nhàng, thẩm thấu nhanh.',
   ARRAY['Dưỡng ẩm 24h cho làn da bé', 'Không nhờn rít, thấm nhanh'],
-  ARRAY['Bơ Shea', 'Dầu Hướng Dương'],
+  E'Dưỡng ẩm 24h cho làn da bé\nKhông nhờn rít, thấm nhanh',
+  E'Bơ Shea\nDầu Hướng Dương',
+  'Thoa đều lên toàn thân sau khi tắm.',
   ARRAY['Thoa đều lên toàn thân sau khi tắm.']
 );
 

@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { Loader2, Plus, Save, Trash2, Upload, X } from 'lucide-react';
 import { uploadImage } from '@/src/lib/adminApi';
 import {
-  DEFAULT_FOOTER,
+  EMPTY_FOOTER,
   isRecord,
   normalizeFooterData,
   type FooterData,
@@ -14,7 +14,7 @@ const LOGO_IMAGE_TYPES = ['image/png', 'image/svg+xml', 'image/webp', 'image/jpe
 const MAX_LOGO_SIZE = 5 * 1024 * 1024;
 
 export default function FooterManager() {
-  const [data, setData] = useState<FooterData>(DEFAULT_FOOTER);
+  const [data, setData] = useState<FooterData>(EMPTY_FOOTER);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -63,10 +63,10 @@ export default function FooterManager() {
         const parsedValue = typeof savedValue === 'string' ? JSON.parse(savedValue) : savedValue;
         return normalizeFooterData(parsedValue);
       }
-      return DEFAULT_FOOTER;
+      return EMPTY_FOOTER;
     } catch (err) {
       console.error('Error loading footer data:', err);
-      return DEFAULT_FOOTER;
+      return EMPTY_FOOTER;
     }
   }
 

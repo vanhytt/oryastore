@@ -17,13 +17,13 @@ interface BrandStoryManagerProps {
 }
 
 const DEFAULT: BrandStoryData = {
-  hero: { badge: "CÂU CHUYỆN", mainHeading: "Khởi nguồn từ tình mẫu tử", description1: "", description2: "", ctaButton1: { label: "Khám phá", link: "/san-pham" }, ctaButton2: { label: "Liên hệ", link: "#contact" }, mainImage: "/placeholder.jpg", badgeImage: { title: "An toàn", subtitle: "Thiên nhiên", image: "/placeholder.jpg" } },
-  guidelines: { title: "Kim chỉ nam", mission: { title: "Sứ mệnh", description: "" }, vision: { title: "Tầm nhìn", description: "" }, coreValues: [{ icon: "heart", title: "", description: "" }] },
-  timeline: [{ period: "2020", title: "", description: "" }],
+  hero: { badge: "", mainHeading: "", description1: "", description2: "", ctaButton1: { label: "", link: "" }, ctaButton2: { label: "", link: "" }, mainImage: "", badgeImage: { title: "", subtitle: "", image: "" } },
+  guidelines: { title: "", mission: { title: "", description: "" }, vision: { title: "", description: "" }, coreValues: [] },
+  timeline: [],
   quote: { text: "", author: "", position: "", signature: "" },
-  commitmentsHeader: { badge: 'CAM KẾT VÀNG TỪ ORYA', title: 'Cam kết "5 KHÔNG" tuyệt đối', description: '' },
-  commitments: [{ icon: "check", number: "01", title: "", description: "" }],
-  factory: { title: "", description: "", highlights: [{ title: "", description: "" }], image: "/placeholder.jpg" },
+  commitmentsHeader: { badge: "", title: "", description: "" },
+  commitments: [],
+  factory: { title: "", description: "", highlights: [], image: "" },
   ctaBanner: { title: "", subtitle: "", buttonLabel: "", buttonLink: "" },
 };
 

@@ -4,6 +4,11 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Phone, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { useCart } from "@/src/lib/cartContext";
+import {
+  DEFAULT_TOPBAR_SETTINGS,
+  normalizeTopBarSettings,
+  type TopBarSettings,
+} from "@/src/lib/topbarSettings";
 
 const navLinks = [
   { label: "Trang chủ", href: "/" },
@@ -23,51 +28,69 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { totalItems, setIsCartOpen } = useCart();
-  const [mounted, setMounted] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string>("/logo.png"); // Default logo
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [topBarSettings, setTopBarSettings] = useState<TopBarSettings>(
+    DEFAULT_TOPBAR_SETTINGS,
+  );
 
   useEffect(() => {
-    setMounted(true);
-    // Fetch logo from API (not supabaseAdmin)
     fetch("/api/settings")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.logo) setLogoUrl(data.logo);
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`Không thể tải cài đặt trang (${res.status})`);
+        return res.json() as Promise<Record<string, unknown>>;
+      })
+      .then((settings) => {
+        if (typeof settings.logo === "string" && settings.logo.trim()) {
+          setLogoUrl(settings.logo);
+        }
+        const footer = settings.footer_settings;
+        if (typeof footer === "object" && footer !== null) {
+          const brand =
+            "brand" in footer &&
+            typeof footer.brand === "object" &&
+            footer.brand !== null
+              ? (footer.brand as Record<string, unknown>)
+              : null;
+          if (typeof brand?.logo_url === "string" && brand.logo_url.trim()) {
+            setLogoUrl(brand.logo_url);
+          }
+        }
+
+        setTopBarSettings(normalizeTopBarSettings(settings.topbar_settings));
       })
       .catch((err) => {
-        console.error("Error fetching logo:", err);
-        // Keep default logo on error
+        console.error("Error fetching header settings:", err);
       });
   }, []);
 
   return (
     <header className="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] sticky top-0 z-50">
       {/* Top Bar */}
-      <div className="bg-[#5D8D4A] text-white py-2">
-        <div className="max-w-[1200px] mx-auto px-5 flex items-center justify-between">
-          <p className="text-sm hidden md:block">
-            🌿 Sản phẩm chăm sóc mẹ &amp; bé được tin dùng bởi hàng triệu gia
-            đình Việt
-          </p>
-          <a
-            href="tel:18001800"
-            className="flex items-center gap-2 text-[#ED9717] font-bold text-sm hover:text-yellow-300 transition-colors rounded-lg"
-          >
-            <Phone size={14} />
-            Hotline: 0398126895
-          </a>
+      {topBarSettings.is_active && (
+        <div className="bg-[#5D8D4A] py-2 text-white">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-5">
+            <p className="min-w-0 text-xs font-medium sm:text-sm">
+              {topBarSettings.announcement}
+            </p>
+            <a
+              href={`tel:${topBarSettings.hotline}`}
+              className="flex shrink-0 items-center gap-2 rounded-lg text-sm font-bold text-[#ED9717] transition-colors hover:text-yellow-300"
+            >
+              <Phone size={14} />
+              {topBarSettings.hotline}
+            </a>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Header */}
       <div className="max-w-[1200px] mx-auto px-5 py-3 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center flex-shrink-0">
-          <img
-            src={logoUrl}
-            alt="Orya Logo"
-            className="h-12 w-auto object-contain block"
-          />
+        <Link href="/" className="flex flex-shrink-0 items-center">
+          {logoUrl && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={logoUrl} alt="Orya" className="block h-12 w-auto object-contain" />
+          )}
         </Link>
 
         {/* Desktop Navigation */}
@@ -109,7 +132,7 @@ export default function Header() {
         {/* Right Actions */}
         <div className="flex items-center gap-3">
           <a
-            href="tel:0398126895"
+            href={`tel:${topBarSettings.hotline}`}
             className="hidden md:flex items-center gap-2 bg-[#ED9717] text-white font-bold px-4 py-2 hover:bg-[#d4880f] transition-colors min-h-[44px] rounded-xl"
           >
             <Phone size={16} />
@@ -122,7 +145,7 @@ export default function Header() {
           >
             <ShoppingCart size={24} />
             <span className="absolute -top-1 -right-1 bg-[#ED9717] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-pulse-once">
-              {mounted ? totalItems : 0}
+              {totalItems}
             </span>
           </button>
 

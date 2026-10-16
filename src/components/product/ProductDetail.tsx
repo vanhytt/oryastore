@@ -8,7 +8,6 @@ import {
   Plus, 
   ShoppingCart, 
   Leaf, 
-  ShieldAlert, 
   ShieldCheck, 
   RotateCcw,
   CheckCircle2,
@@ -17,6 +16,13 @@ import {
 } from "lucide-react";
 import { Product } from "@/src/lib/dbService";
 import { normalizeCartPrice, resolveCartImage, useCart } from "@/src/lib/cartContext";
+
+const DEFAULT_USES =
+  "Sản phẩm Orya hỗ trợ chăm sóc làn da hằng ngày, giúp duy trì độ ẩm và mang lại cảm giác mềm mại, dễ chịu. Hiệu quả sử dụng có thể khác nhau tùy cơ địa.";
+const DEFAULT_INGREDIENTS =
+  "Công thức Orya ưu tiên lựa chọn các thành phần phù hợp cho quy trình chăm sóc dịu nhẹ. Vui lòng xem danh sách thành phần đầy đủ trên bao bì sản phẩm cụ thể.";
+const DEFAULT_USAGE_INSTRUCTIONS =
+  "Làm sạch và lau khô vùng da cần chăm sóc.\nLấy một lượng sản phẩm vừa đủ, thoa đều và massage nhẹ nhàng.\nSử dụng theo hướng dẫn trên bao bì sản phẩm. Ngưng sử dụng nếu xuất hiện dấu hiệu kích ứng.";
 
 interface ProductDetailProps {
   product: Product;
@@ -29,6 +35,10 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"benefits" | "usage">("benefits");
+  const usesText = product.uses?.trim() || product.benefits?.join("\n").trim() || DEFAULT_USES;
+  const ingredientsText = product.ingredients?.trim() || DEFAULT_INGREDIENTS;
+  const usageInstructionsText =
+    product.usage_instructions?.trim() || product.usage?.join("\n").trim() || DEFAULT_USAGE_INSTRUCTIONS;
 
   const galleryImages = useMemo(() => {
     const sources = [
@@ -106,7 +116,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
           {/* LEFT COLUMN: Product Images */}
           <div className="lg:col-span-6 flex flex-col">
             {/* Main Image Container */}
-            <div className={`w-full h-[380px] md:h-[480px] bg-gradient-to-b ${product.colors?.[currentImageIndex] || "from-[#5D8D4A] to-[#4A7A38]"} rounded-2xl flex items-center justify-center relative shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-500`}>
+            <div className={`relative flex h-[380px] w-full items-center justify-center overflow-hidden rounded-2xl bg-gray-50 shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-500 md:h-[480px] ${product.colors?.[currentImageIndex] ? `bg-gradient-to-b ${product.colors[currentImageIndex]}` : ""}`}>
               {product.badge && (
                 <span className="absolute top-4 left-4 z-10 bg-[#E59822] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wide">
                   {product.badge}
@@ -120,17 +130,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                   alt={product.name}
                   className="max-h-[85%] max-w-[85%] object-contain transition-transform duration-300 hover:scale-105 z-10"
                 />
-              ) : (
-                <div className="text-center text-white p-8 z-10">
-                  <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full mx-auto mb-6 flex items-center justify-center border border-white/30 shadow-inner">
-                    <span className="text-white font-bold text-3xl tracking-widest">ORYA</span>
-                  </div>
-                  <h2 className="font-bold text-2xl md:text-3xl drop-shadow-md max-w-sm mx-auto leading-tight">{product.name}</h2>
-                  <p className="text-white/70 text-xs mt-3 bg-black/10 inline-block px-3 py-1 rounded-full uppercase tracking-wider">
-                    Mặt hàng an toàn • Góc {currentImageIndex + 1}
-                  </p>
-                </div>
-              )}
+              ) : null}
 
               {/* Decorative light elements */}
               <div className="absolute w-64 h-64 bg-white/10 rounded-full -top-12 -right-12 blur-2xl"></div>
@@ -297,41 +297,14 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                   <h4 className="text-[#5D8D4A] font-bold text-lg mb-4 flex items-center gap-2">
                     <CheckCircle2 size={20} /> Công dụng nổi bật
                   </h4>
-                  <ul className="space-y-3.5">
-                  {(product.benefits || []).map((benefit, i) => (
-                      <li key={i} className="flex gap-3 text-[#404041] text-sm md:text-base leading-relaxed">
-                        <span className="w-5 h-5 bg-[#EFFFE9] border border-[#5D8D4A]/20 rounded-full flex items-center justify-center text-[#5D8D4A] text-xs font-bold flex-shrink-0 mt-0.5">✓</span>
-                        <span>{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="whitespace-pre-line text-gray-600 leading-relaxed">{usesText}</p>
                 </div>
                 {/* Ingredients */}
                 <div>
                   <h4 className="text-[#5D8D4A] font-bold text-lg mb-4 flex items-center gap-2">
                     <Leaf size={20} /> Thành phần lành tính
                   </h4>
-                  <ul className="space-y-3.5">
-                  {(product.ingredients || []).map((ingredient, i) => (
-                      <li key={i} className="flex gap-3 text-[#404041] text-sm md:text-base leading-relaxed">
-                        {ingredient.startsWith("Sản phẩm 5 KHÔNG:") ? (
-                          <div className="flex gap-3 bg-[#FFF5F5] border border-red-100 rounded-xl p-3.5 w-full mt-2">
-                            <span className="text-red-500 font-bold mt-0.5 flex-shrink-0">
-                              <ShieldAlert size={18} />
-                            </span>
-                            <span className="text-[#A84343] font-semibold text-sm">
-                              {ingredient}
-                            </span>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="w-1.5 h-1.5 bg-[#5D8D4A] rounded-full flex-shrink-0 mt-2.5"></span>
-                            <span>{ingredient}</span>
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="whitespace-pre-line text-gray-600 leading-relaxed">{ingredientsText}</p>
                 </div>
               </div>
             ) : (
@@ -339,18 +312,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                 <h4 className="text-[#5D8D4A] font-bold text-lg mb-6 flex items-center gap-2">
                   <RotateCcw size={20} /> Hướng dẫn các bước sử dụng an toàn
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {(product.usage || []).map((step, i) => (
-                    <div key={i} className="flex gap-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
-                      <span className="w-8 h-8 rounded-full bg-[#5D8D4A] text-white flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-sm">
-                        {i + 1}
-                      </span>
-                      <p className="text-[#404041] text-sm md:text-base leading-relaxed pt-0.5">
-                        {step}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <p className="whitespace-pre-line text-gray-600 leading-relaxed">{usageInstructionsText}</p>
               </div>
             )}
           </div>
@@ -445,14 +407,7 @@ export default function ProductDetail({ product, allProducts }: ProductDetailPro
                       />
                     </div>
                   ) : (
-                    <div className={`w-full h-52 bg-gradient-to-b ${p.colors?.[0] || "from-[#5D8D4A] to-[#4A7A38]"} flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]`}>
-                      <div className="text-center text-white px-4">
-                        <div className="w-10 h-10 bg-white/20 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/20">
-                          <span className="text-white font-bold text-sm">O</span>
-                        </div>
-                        <p className="text-xs font-bold leading-tight line-clamp-1">{p.name}</p>
-                      </div>
-                    </div>
+                    <div aria-hidden className="h-52 w-full bg-gray-50" />
                   )}
                 </div>
 

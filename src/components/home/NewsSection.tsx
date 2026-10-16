@@ -46,7 +46,7 @@ export default function NewsSection({ news }: NewsSectionProps) {
                 className="bg-white rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-[0_8px_24px_rgba(93,141,74,0.12)] hover:-translate-y-1 border border-[#E5E5E5]"
               >
                 {/* Image */}
-                <div className="w-full h-48 bg-gradient-to-br from-[#EAF6E7] to-[#DDECCF] flex items-center justify-center relative overflow-hidden">
+                <div className="w-full h-48 bg-[#EAF6E7] relative overflow-hidden">
                   {article.cover_image ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
@@ -54,25 +54,19 @@ export default function NewsSection({ news }: NewsSectionProps) {
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                  ) : (
-                    <div className="text-center">
-                      <Newspaper size={36} className="text-[#5D8D4A]/40 mx-auto mb-2" />
-                      <p className="text-[#5D8D4A] font-bold text-sm">Tin tức Orya</p>
-                    </div>
-                  )}
-                  <span className="absolute top-3 left-3 bg-[#5D8D4A] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                    Tin tức
-                  </span>
+                  ) : null}
                 </div>
 
                 {/* Content */}
                 <div className="p-5">
                   {/* Meta: date + author */}
                   <div className="flex items-center gap-4 text-[#404041]/60 text-xs mb-3">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar size={13} className="text-[#ED9717]" />
-                      {article.published_date || "Mới đăng"}
-                    </span>
+                    {article.published_date && (
+                      <span className="flex items-center gap-1.5">
+                        <Calendar size={13} className="text-[#ED9717]" />
+                        {article.published_date}
+                      </span>
+                    )}
                     {article.author && (
                       <span className="flex items-center gap-1.5">
                         <User size={13} className="text-[#5D8D4A]" />
@@ -84,9 +78,11 @@ export default function NewsSection({ news }: NewsSectionProps) {
                   <h3 className="text-[#2D3748] font-bold text-base leading-6 mb-3 line-clamp-2 group-hover:text-[#5D8D4A] transition-colors">
                     {article.title}
                   </h3>
-                  <p className="text-[#404041]/70 text-sm leading-6 mb-4 line-clamp-3">
-                    {article.excerpt || article.content?.replace(/<[^>]+>/g, "").slice(0, 140)}
-                  </p>
+                  {article.excerpt && (
+                    <p className="text-[#404041]/70 text-sm leading-6 mb-4 line-clamp-3">
+                      {article.excerpt}
+                    </p>
+                  )}
                   <Link
                     href={`/tin-tuc/${article.id}`}
                     className="inline-flex items-center gap-1.5 text-[#5D8D4A] text-sm font-bold hover:text-[#4A7A38] transition-colors group/link"

@@ -10,7 +10,7 @@ export async function GET() {
   try {
     if (!supabaseAdmin) {
       console.warn("⚠️  Supabase admin not configured");
-      return NextResponse.json({});
+      return NextResponse.json(null);
     }
 
     const { data, error } = await supabaseAdmin
@@ -21,15 +21,14 @@ export async function GET() {
 
     if (error) {
       console.error("Error fetching brand story:", error);
-      return NextResponse.json({}, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     if (!data) {
-      return NextResponse.json({});
+      return NextResponse.json(null);
     }
 
-    // Return the data object (which contains the full JSON structure)
-    const brandStory = data.data || JSON.parse(data.value || "{}");
+    const brandStory = data.data ?? (data.value ? JSON.parse(data.value) : null);
 
     return NextResponse.json(brandStory, {
       headers: {
@@ -38,6 +37,6 @@ export async function GET() {
     });
   } catch (err) {
     console.error("Error in /api/brand-story:", err);
-    return NextResponse.json({}, { status: 500 });
+    return NextResponse.json({ error: "Unable to fetch brand story" }, { status: 500 });
   }
 }

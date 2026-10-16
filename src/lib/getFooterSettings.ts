@@ -1,10 +1,9 @@
 // ============================================================
 // GET FOOTER SETTINGS - Server-side Helper
-// Fetch dynamic footer data with fallback defaults
+// Fetch dynamic footer data from Supabase
 // ============================================================
 
 import {
-  DEFAULT_FOOTER_SETTINGS,
   type FooterSettings,
   mapFooterSetting,
 } from "./adminDbService";
@@ -25,26 +24,28 @@ type FooterSettingsWithPolicies = Omit<FooterSettings, "links"> & {
 
 /**
  * Server-side function to get footer settings
- * Returns default values if not found in database
+ * Returns null when no saved settings exist
  * Handles JSON parsing and structure conversion
  */
-export async function getFooterSettings(): Promise<FooterSettingsWithPolicies> {
+export async function getFooterSettings(): Promise<FooterSettingsWithPolicies | null> {
   try {
     if (!supabaseAdmin) {
-      return withPolicyContent(DEFAULT_FOOTER_SETTINGS);
+      return null;
     }
 
     const { data, error } = await supabaseAdmin
       .from("settings")
       .select("value, data")
       .eq("key", "footer_settings")
+      .abortSignal(AbortSignal.timeout(8000))
       .maybeSingle();
 
     if (error) throw error;
+    if (!data) return null;
     return withPolicyContent(mapFooterSetting(data));
   } catch (error) {
     console.error("Error fetching footer settings:", error);
-    return withPolicyContent(DEFAULT_FOOTER_SETTINGS);
+    return null;
   }
 }
 

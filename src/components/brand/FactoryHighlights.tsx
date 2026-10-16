@@ -10,13 +10,7 @@ interface FactoryProps {
 }
 
 export default function FactoryHighlights({ highlights }: FactoryProps) {
-  const defaultHighlights: Highlight[] = [
-    { title: 'Công nghệ hiện đại', description: 'Áp dụng công nghệ tiên tiến trong sản xuất' }
-  ];
-
-  if (!highlights || highlights.length === 0) {
-    highlights = defaultHighlights;
-  }
+  if (!highlights?.length) return null;
 
   return (
     <ul className="space-y-4">

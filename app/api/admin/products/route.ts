@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/src/lib/supabaseAdmin";
+
+function revalidateProductPages() {
+  for (const path of ["/", "/products", "/san-pham"]) revalidatePath(path);
+}
+
+function textValue(value: unknown): string | null {
+  if (typeof value === "string") return value || null;
+  if (Array.isArray(value)) {
+    const lines = value.filter((item): item is string => typeof item === "string");
+    return lines.length > 0 ? lines.join("\n") : null;
+  }
+  return null;
+}
 
 // Mapping từ DB snake_case → app camelCase
 function mapProduct(row: Record<string, unknown>) {
@@ -31,7 +45,9 @@ function mapProduct(row: Record<string, unknown>) {
     images,
     primaryImage,
     benefits: row.benefits,
-    ingredients: row.ingredients,
+    uses: textValue(row.uses) ?? textValue(row.benefits) ?? "",
+    ingredients: textValue(row.ingredients) ?? "",
+    usage_instructions: textValue(row.usage_instructions) ?? textValue(row.usage) ?? "",
     usage: row.usage,
     isActive: row.is_active,
     sortOrder: row.sort_order,
@@ -86,7 +102,7 @@ export async function POST(req: NextRequest) {
         original_price: body.originalPrice ?? null,
         original_price_value: body.originalPriceValue ?? 0,
         badge: body.badge ?? null,
-        rating: body.rating ?? 5.0,
+        rating: body.rating ?? 0,
         reviews_count: body.reviewsCount ?? 0,
         description: body.description ?? null,
         short_description: body.shortDescription ?? null,
@@ -94,7 +110,9 @@ export async function POST(req: NextRequest) {
         images: Array.isArray(body.images) ? body.images : (body.image ? [body.image] : []),
         primary_image: body.primaryImage || body.images?.[0] || body.image || null,
         benefits: body.benefits ?? [],
-        ingredients: body.ingredients ?? [],
+        uses: textValue(body.uses),
+        ingredients: textValue(body.ingredients),
+        usage_instructions: textValue(body.usage_instructions),
         usage: body.usage ?? [],
         is_active: body.isActive ?? true,
         sort_order: body.sortOrder ?? 0,
@@ -107,6 +125,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateProductPages();
   return NextResponse.json(mapProduct(data), { status: 201 });
 }
 
@@ -145,7 +164,9 @@ export async function PUT(req: NextRequest) {
       images: Array.isArray(rest.images) ? rest.images : (rest.image ? [rest.image] : []),
       primary_image: rest.primaryImage || rest.images?.[0] || rest.image || null,
       benefits: rest.benefits ?? [],
-      ingredients: rest.ingredients ?? [],
+      uses: textValue(rest.uses),
+      ingredients: textValue(rest.ingredients),
+      usage_instructions: textValue(rest.usage_instructions),
       usage: rest.usage ?? [],
       is_active: rest.isActive ?? true,
       sort_order: rest.sortOrder ?? 0,
@@ -158,6 +179,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateProductPages();
   return NextResponse.json(mapProduct(data));
 }
 
@@ -187,5 +209,6 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateProductPages();
   return NextResponse.json({ success: true });
 }

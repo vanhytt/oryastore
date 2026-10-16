@@ -21,14 +21,6 @@ export const metadata: Metadata = {
     description:
       "Cập nhật tin tức, kiến thức khoa học về chăm sóc da mẹ bầu, bé sơ sinh từ Orya & CVI Pharma.",
     url: "https://orya.vn/tin-tuc",
-    images: [
-      {
-        url: "/banner.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Tin tức Orya - Kiến thức chăm sóc mẹ bầu và bé yêu",
-      },
-    ],
   },
 };
 

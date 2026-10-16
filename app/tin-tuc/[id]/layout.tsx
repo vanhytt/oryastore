@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getNews } from "@/src/lib/dbService";
+import { getPublishedNews } from "@/src/lib/dbService";
 
 const BASE_URL = "https://orya.vn";
 
@@ -16,22 +16,15 @@ export async function generateMetadata({
   const { id } = await params;
 
   try {
-    const allNews = await getNews();
+    const allNews = await getPublishedNews();
     const article = allNews.find((item) => item.id.toString() === id.toString());
-
-    if (!article) {
-      return {
-        title: "Bài Viết Không Tìm Thấy",
-        description: "Bài viết này không tồn tại hoặc đã bị gỡ bỏ.",
-      };
-    }
+    if (!article) return {};
 
     const description =
       article.excerpt ||
-      (article.content ? article.content.slice(0, 160).replace(/\n/g, " ") + "..." : "") ||
-      `${article.title} - Kiến thức chăm sóc sức khỏe mẹ bầu và bé yêu từ Orya.`;
+      article.content.slice(0, 160).replace(/\n/g, " ");
 
-    const ogImage = article.cover_image || "/banner.jpg";
+    const ogImage = article.cover_image;
 
     return {
       title: article.title,
@@ -54,27 +47,25 @@ export async function generateMetadata({
         type: "article",
         publishedTime: article.published_date,
         authors: article.author ? [article.author] : undefined,
-        images: [
+        ...(ogImage ? { images: [
           {
             url: ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}`,
             width: 1200,
             height: 630,
             alt: article.title,
           },
-        ],
+        ] } : {}),
       },
       twitter: {
         card: "summary_large_image",
         title: article.title,
         description,
-        images: [ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}`],
+        ...(ogImage ? { images: [ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}`] } : {}),
       },
     };
-  } catch {
-    return {
-      title: "Tin Tức Orya",
-      description: "Kiến thức chăm sóc sức khỏe mẹ bầu và bé yêu từ Orya & CVI Pharma.",
-    };
+  } catch (error) {
+    console.error("Error generating article metadata:", error);
+    return {};
   }
 }
 

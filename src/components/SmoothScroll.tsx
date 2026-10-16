@@ -16,6 +16,12 @@ export default function SmoothScroll() {
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
+    const bodyResizeObserver = new ResizeObserver(() => lenis.resize());
+    bodyResizeObserver.observe(document.body);
+
+    const handleLoad = () => lenis.resize();
+    window.addEventListener("load", handleLoad);
+
     let frameId = 0;
 
     const raf = (time: number) => {
@@ -27,6 +33,8 @@ export default function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(frameId);
+      bodyResizeObserver.disconnect();
+      window.removeEventListener("load", handleLoad);
       lenis.destroy();
     };
   }, []);

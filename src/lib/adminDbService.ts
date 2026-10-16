@@ -4,7 +4,7 @@
 // ============================================================
 
 import { supabase, isSupabaseConfigured } from "./supabase";
-import { DEFAULT_FOOTER, normalizeFooterData } from "./footerSettings";
+import { normalizeFooterData } from "./footerSettings";
 
 // ─── TYPES ────────────────────────────────────────────────
 
@@ -41,42 +41,20 @@ export interface FooterSetting {
 
 export async function getSettings(): Promise<Setting[]> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_settings");
-    return stored ? JSON.parse(stored) : [];
+    return [];
   }
 
-  try {
-    const { data, error } = await supabase
-      .from("settings")
-      .select("*")
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      // Check if error is "table not found"
-      if (error.message?.includes("settings") && error.code === "PGRST116") {
-        console.warn("⚠️  Settings table not found in Supabase");
-        console.warn("📝 Please run migrations: npm run db:push");
-        // Fallback to localStorage
-        const stored = localStorage.getItem("orya_settings");
-        return stored ? JSON.parse(stored) : [];
-      }
-      throw error;
-    }
-
-    return data || [];
-  } catch (err) {
-    console.error("Error fetching settings:", err);
-    // Fallback to localStorage on any error
-    const stored = localStorage.getItem("orya_settings");
-    return stored ? JSON.parse(stored) : [];
-  }
+  const { data, error } = await supabase
+    .from("settings")
+    .select("*")
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function getSetting(key: string): Promise<Setting | null> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_settings");
-    const settings = stored ? JSON.parse(stored) : [];
-    return settings.find((s: Setting) => s.key === key) || null;
+    return null;
   }
 
   const { data, error } = await supabase
@@ -99,30 +77,7 @@ export async function updateSetting(
   data?: Record<string, unknown>
 ): Promise<Setting | null> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_settings");
-    const settings = stored ? JSON.parse(stored) : [];
-    const idx = settings.findIndex((s: Setting) => s.key === key);
-
-    if (idx >= 0) {
-      settings[idx] = {
-        ...settings[idx],
-        value,
-        data: data || settings[idx].data,
-        updated_at: new Date().toISOString(),
-      };
-    } else {
-      settings.push({
-        id: `local_${key}_${Date.now()}`,
-        key,
-        value,
-        data: data || null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-    }
-
-    localStorage.setItem("orya_settings", JSON.stringify(settings));
-    return settings.find((s: Setting) => s.key === key);
+    throw new Error("Supabase is not configured");
   }
 
   const { data: result, error } = await supabase
@@ -142,6 +97,7 @@ export async function updateSetting(
     throw new Error(`Failed to update setting '${key}': ${errorMessage}`);
   }
 
+  await revalidateHome();
   return result;
 }
 // ─── CERTIFICATES HEADER CONFIGURATION ────────────────
@@ -152,34 +108,25 @@ export interface CertificatesHeaderConfig {
   bottomTags: string[];
 }
 
-const DEFAULT_CERTIFICATES_HEADER: CertificatesHeaderConfig = {
-  badge: "CAM KẾT CHẤT LƯỢNG",
-  title: "Chứng nhận chất lượng quốc tế",
-  description: "Orya tự hào đạt được các chứng nhận chất lượng hàng đầu thế giới, khẳng định cam kết an toàn và hiệu quả.",
-  bottomTags: [
-    "Kiểm nghiệm lâm sàng",
-    "Được bác sĩ khuyên dùng",
-    "Không Paraben",
-    "Không cồn"
-  ]
-};
-
-export async function getCertificatesHeader(): Promise<CertificatesHeaderConfig> {
+export async function getCertificatesHeader(): Promise<CertificatesHeaderConfig | null> {
   const setting = await getSetting('certificates_header');
-  if (setting?.data) {
-    return {
-      ...DEFAULT_CERTIFICATES_HEADER,
-      ...(setting.data as unknown as CertificatesHeaderConfig)
-    };
-  }
-  return DEFAULT_CERTIFICATES_HEADER;
+  if (!setting?.data || typeof setting.data !== "object") return null;
+
+  const config = setting.data as unknown as Partial<CertificatesHeaderConfig>;
+  return {
+    badge: typeof config.badge === "string" ? config.badge : "",
+    title: typeof config.title === "string" ? config.title : "",
+    description: typeof config.description === "string" ? config.description : "",
+    bottomTags: Array.isArray(config.bottomTags)
+      ? config.bottomTags.filter((tag): tag is string => typeof tag === "string")
+      : [],
+  };
 }
 
 export async function updateCertificatesHeader(
   config: CertificatesHeaderConfig
 ): Promise<void> {
   await updateSetting('certificates_header', null, config as unknown as Record<string, unknown>);
-  await revalidateHome();
 }
 
 
@@ -187,13 +134,16 @@ export async function updateCertificatesHeader(
 // ─── REVALIDATE HELPER ────────────────────────────
 async function revalidateHome() {
   try {
-    await fetch('/api/revalidate', { 
+    const response = await fetch('/api/revalidate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paths: ['/'] })
+      body: JSON.stringify({ paths: ['/', '/thuong-hieu', '/san-pham', '/products', '/tin-tuc'] })
     });
+    if (!response.ok) {
+      console.error(`Revalidation failed with status ${response.status}`);
+    }
   } catch (err) {
-    console.warn('Revalidate failed:', err);
+    console.error('Revalidation request failed:', err);
   }
 }
 
@@ -201,8 +151,7 @@ async function revalidateHome() {
 
 export async function getCertificates(): Promise<Certificate[]> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_certificates");
-    return stored ? JSON.parse(stored) : [];
+    return [];
   }
 
   const { data, error } = await supabase
@@ -222,19 +171,7 @@ export async function createCertificate(
   cert: Omit<Certificate, "id" | "created_at" | "updated_at">
 ): Promise<Certificate> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_certificates");
-    const certificates = stored ? JSON.parse(stored) : [];
-
-    const newCert: Certificate = {
-      id: `local_${Date.now()}`,
-      ...cert,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    certificates.push(newCert);
-    localStorage.setItem("orya_certificates", JSON.stringify(certificates));
-    return newCert;
+    throw new Error("Supabase is not configured");
   }
 
   // Ensure we send the correct field names to Supabase
@@ -267,21 +204,7 @@ export async function updateCertificate(
   cert: Partial<Omit<Certificate, "id" | "created_at" | "updated_at">>
 ): Promise<Certificate> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_certificates");
-    let certificates = stored ? JSON.parse(stored) : [];
-
-    certificates = certificates.map((c: Certificate) =>
-      c.id === id
-        ? {
-            ...c,
-            ...cert,
-            updated_at: new Date().toISOString(),
-          }
-        : c
-    );
-
-    localStorage.setItem("orya_certificates", JSON.stringify(certificates));
-    return certificates.find((c: Certificate) => c.id === id);
+    throw new Error("Supabase is not configured");
   }
 
   // Ensure we send only valid fields to Supabase
@@ -311,11 +234,7 @@ export async function updateCertificate(
 
 export async function deleteCertificate(id: string): Promise<void> {
   if (!isSupabaseConfigured || !supabase) {
-    const stored = localStorage.getItem("orya_certificates");
-    let certificates = stored ? JSON.parse(stored) : [];
-    certificates = certificates.filter((c: Certificate) => c.id !== id);
-    localStorage.setItem("orya_certificates", JSON.stringify(certificates));
-    return;
+    throw new Error("Supabase is not configured");
   }
 
   const { error } = await supabase
@@ -376,46 +295,19 @@ export interface FooterSettings {
   };
 }
 
-export const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
-  social: { ...DEFAULT_FOOTER.social },
-  brand: {
-    logo_url: DEFAULT_FOOTER.brand.logo_url,
-    description: DEFAULT_FOOTER.brand.description,
-    cgmp_text: DEFAULT_FOOTER.brand.cgmp_text,
-    copyright: DEFAULT_FOOTER.footer_bottom.copyright,
-  },
-  links: {
-    info_menu: DEFAULT_FOOTER.info_links.map((link, index) => ({
-      id: `${link.name}-${index}`,
-      label: link.name,
-      url: link.link,
-    })),
-    policy_menu: DEFAULT_FOOTER.policy_links.map((link, index) => ({
-      id: `${link.name}-${index}`,
-      label: link.name,
-      url: link.link,
-      content: link.content,
-    })),
-  },
-  products: DEFAULT_FOOTER.products.map((link, index) => ({
-    id: `${link.name}-${index}`,
-    label: link.name,
-    url: link.link,
-  })),
-  footer_bottom: { disclaimer: DEFAULT_FOOTER.footer_bottom.disclaimer },
-  contact: {
-    phone: DEFAULT_FOOTER.contact.hotline,
-    email: DEFAULT_FOOTER.contact.email,
-    address: DEFAULT_FOOTER.contact.address,
-    working_hours: DEFAULT_FOOTER.contact.working_hours,
-    tax_id: DEFAULT_FOOTER.contact.tax_id,
-  },
+export const EMPTY_FOOTER_SETTINGS: FooterSettings = {
+  social: {},
+  brand: {},
+  links: { info_menu: [], policy_menu: [] },
+  products: [],
+  footer_bottom: {},
+  contact: {},
 };
 
 export function mapFooterSetting(
   setting: Pick<Setting, "value" | "data"> | null
 ): FooterSettings {
-  if (!setting) return DEFAULT_FOOTER_SETTINGS;
+  if (!setting) return EMPTY_FOOTER_SETTINGS;
 
   const savedValue = setting.value?.trim() ? setting.value : setting.data;
   const footerData: unknown = typeof savedValue === "string"
@@ -470,7 +362,7 @@ export async function getFooterSettings(): Promise<FooterSettings> {
     return mapFooterSetting(setting);
   } catch (err) {
     console.error("Error fetching footer settings:", err);
-    return DEFAULT_FOOTER_SETTINGS;
+    return EMPTY_FOOTER_SETTINGS;
   }
 }
 

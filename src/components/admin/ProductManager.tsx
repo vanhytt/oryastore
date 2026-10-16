@@ -28,16 +28,19 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("mom");
+  const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [priceValue, setPriceValue] = useState(0);
   const [originalPrice, setOriginalPrice] = useState("");
   const [originalPriceValue, setOriginalPriceValue] = useState(0);
   const [badge, setBadge] = useState("");
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState<number | "">("");
   const [reviewsCount, setReviewsCount] = useState(0);
   const [description, setDescription] = useState("");
   const [shortDescription, setShortDescription] = useState("");
+  const [uses, setUses] = useState("");
+  const [ingredients, setIngredients] = useState("");
+  const [usageInstructions, setUsageInstructions] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [primaryImage, setPrimaryImage] = useState("");
 
@@ -73,20 +76,25 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
       setReviewsCount(product.reviewsCount);
       setDescription(product.description);
       setShortDescription(product.shortDescription);
+      setUses(product.uses || "");
+      setIngredients(product.ingredients || "");
+      setUsageInstructions(product.usage_instructions || "");
       setImages(product.images || (product.image ? [product.image] : []));
       setPrimaryImage(product.primaryImage || product.image || "");
     } else {
       setEditingProduct(null);
-      setName(""); setCategory("mom"); setPrice(""); setPriceValue(0);
+      setName(""); setCategory(""); setPrice(""); setPriceValue(0);
       setOriginalPrice(""); setOriginalPriceValue(0); setBadge("");
-      setRating(5); setReviewsCount(0); setDescription(""); setShortDescription(""); setImages([]); setPrimaryImage("");
+      setRating(""); setReviewsCount(0); setDescription(""); setShortDescription("");
+      setUses(""); setIngredients(""); setUsageInstructions("");
+      setImages([]); setPrimaryImage("");
     }
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !price || !shortDescription) {
+    if (!name || !category || !price || !shortDescription) {
       onError("Vui lòng nhập các thông tin bắt buộc!");
       return;
     }
@@ -97,9 +105,11 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
         priceValue: Number(priceValue) || 0,
         originalPrice,
         originalPriceValue: Number(originalPriceValue) || 0,
-        badge, rating: Number(rating) || 5,
+        badge,         rating: rating === "" ? 0 : Number(rating),
         reviewsCount: Number(reviewsCount) || 0,
-        description, shortDescription, image: primaryImage || images[0] || "", images, primaryImage,
+        description, shortDescription, uses, ingredients,
+        usage_instructions: usageInstructions,
+        image: primaryImage || images[0] || "", images, primaryImage,
       };
       if (isSupabaseConfigured) {
         if (editingProduct) await adminUpdateProduct(editingProduct.id, payload);
@@ -254,7 +264,8 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
 
                 <div>
                   <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Phân khúc <span className="text-red-500">*</span></label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]">
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]">
+                    <option value="">Chọn danh mục</option>
                     <option value="mom">Chăm sóc mẹ bầu (mom)</option>
                     <option value="baby">Chăm sóc bé (baby)</option>
                   </select>
@@ -287,7 +298,7 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
 
                 <div>
                   <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Đánh giá sao (1.0 – 5.0)</label>
-                  <input type="number" step="0.1" min="1" max="5" value={rating} onChange={(e) => setRating(Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]" />
+                  <input type="number" step="0.1" min="0" max="5" value={rating} onChange={(e) => setRating(e.target.value === "" ? "" : Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]" />
                 </div>
 
                 <div>
@@ -313,6 +324,21 @@ export default function ProductManager({ onSuccess, onError, onUpdateStats }: Pr
                 <div className="md:col-span-2">
                   <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Mô tả chi tiết</label>
                   <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Chi tiết công dụng, cách dùng, thành phần đầy đủ..." className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Công dụng nổi bật</label>
+                  <textarea rows={5} value={uses} onChange={(e) => setUses(e.target.value)} placeholder="Nhập các công dụng chính của sản phẩm..." className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Thành phần lành tính</label>
+                  <textarea rows={5} value={ingredients} onChange={(e) => setIngredients(e.target.value)} placeholder="Nhập thông tin thành phần chi tiết..." className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Hướng dẫn sử dụng</label>
+                  <textarea rows={5} value={usageInstructions} onChange={(e) => setUsageInstructions(e.target.value)} placeholder="Nhập các bước hướng dẫn sử dụng sản phẩm..." className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#5D8D4A]/50 focus:border-[#5D8D4A]" />
                 </div>
               </div>
 

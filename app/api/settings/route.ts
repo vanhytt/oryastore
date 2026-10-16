@@ -16,7 +16,8 @@ export async function GET() {
     const { data, error } = await supabaseAdmin
       .from("settings")
       .select("key, value, data")
-      .in("key", ["logo", "hero_banner", "footer_settings", "brand_story"]);
+      .in("key", ["logo", "hero_banner", "footer_settings", "brand_story", "topbar_settings"])
+      .abortSignal(AbortSignal.timeout(8000));
 
     if (error) {
       console.error("Error fetching settings:", error);
@@ -24,15 +25,32 @@ export async function GET() {
     }
 
     // Convert to { logo: url, hero_banner: url }
-    const settings: Record<string, string | null> = {};
-    data?.forEach((row: any) => {
-      const url = row.data?.url || row.value;
-      settings[row.key] = url;
+    const settings: Record<string, unknown> = {};
+    data?.forEach((row) => {
+      if (
+        row.key === "footer_settings" ||
+        row.key === "brand_story" ||
+        row.key === "topbar_settings"
+      ) {
+        if (row.data && typeof row.data === "object") {
+          settings[row.key] = row.data;
+        } else if (typeof row.value === "string" && row.value.trim()) {
+          settings[row.key] = JSON.parse(row.value);
+        } else {
+          settings[row.key] = null;
+        }
+        return;
+      }
+
+      const settingData = row.data && typeof row.data === "object"
+        ? row.data as Record<string, unknown>
+        : null;
+      settings[row.key] = settingData?.url ?? row.value;
     });
 
     return NextResponse.json(settings, {
       headers: {
-        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
+        "Cache-Control": "no-store",
       },
     });
   } catch (err) {

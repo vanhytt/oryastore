@@ -31,7 +31,7 @@ export default function NewsManager({ onSuccess, onError, onUpdateStats }: NewsM
   const [coverImage, setCoverImage] = useState("");
   const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState("");
-  const [author, setAuthor] = useState("Ban Biên Tập");
+  const [author, setAuthor] = useState("");
   const [status, setStatus] = useState<"Draft" | "Published">("Draft");
 
   const fetchNews = async () => {
@@ -59,12 +59,12 @@ export default function NewsManager({ onSuccess, onError, onUpdateStats }: NewsM
       setCoverImage(news.cover_image || "");
       setContent(news.content);
       setExcerpt(news.excerpt);
-      setAuthor(news.author || "Ban Biên Tập");
+      setAuthor(news.author || "");
       setStatus(news.status);
     } else {
       setEditingNews(null);
       setTitle(""); setCoverImage(""); setContent(""); setExcerpt("");
-      setAuthor("Ban Biên Tập"); setStatus("Draft");
+      setAuthor(""); setStatus("Draft");
     }
     setIsModalOpen(true);
   };

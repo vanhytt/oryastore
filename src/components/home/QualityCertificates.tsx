@@ -1,73 +1,5 @@
-import { CheckCircle2, Leaf, Factory, ShieldCheck } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { getCertificates, getCertificatesHeader } from "@/src/lib/adminDbService";
-
-// ─── Default Certificates (Fallback) ───────────────
-const DEFAULT_CERTIFICATES = [
-  {
-    id: "default_1",
-    title: "Vegan Certified",
-    description:
-      "Không thử nghiệm trên động vật, 100% thành phần từ thực vật và khoáng chất tự nhiên.",
-    image_url: null,
-    icon: "leaf",
-    iconBg: "bg-[#DCFCE7]",
-    iconColor: "text-[#16A34A]",
-    cardBorder: "border-[#BBF7D0]",
-    cardGlow: "hover:shadow-[0_20px_48px_rgba(22,163,74,0.12)]",
-    accent: "text-[#15803D]",
-    sort_order: 0,
-  },
-  {
-    id: "default_2",
-    title: "CGMP-ASEAN",
-    description:
-      "Sản xuất tại nhà máy đạt chuẩn CGMP-ASEAN, đảm bảo chất lượng và vệ sinh nghiêm ngặt.",
-    image_url: null,
-    icon: "factory",
-    iconBg: "bg-[#DBEAFE]",
-    iconColor: "text-[#2563EB]",
-    cardBorder: "border-[#BFDBFE]",
-    cardGlow: "hover:shadow-[0_20px_48px_rgba(37,99,235,0.10)]",
-    accent: "text-[#1D4ED8]",
-    sort_order: 1,
-  },
-  {
-    id: "default_3",
-    title: "SLS Free",
-    description:
-      "Không chứa Sodium Lauryl Sulfate, an toàn cho da nhạy cảm của mẹ bầu và trẻ sơ sinh.",
-    image_url: null,
-    icon: "shield",
-    iconBg: "bg-[#FEF3C7]",
-    iconColor: "text-[#D97706]",
-    cardBorder: "border-[#FDE68A]",
-    cardGlow: "hover:shadow-[0_20px_48px_rgba(217,119,6,0.10)]",
-    accent: "text-[#B45309]",
-    sort_order: 2,
-  },
-];
-
-// ─── Default Trust Badges (será substituído por dinâmico) ───
-const DEFAULT_TRUST_BADGES = [
-  "Kiểm nghiệm lâm sàng",
-  "Được bác sĩ khuyên dùng",
-  "Không Paraben",
-  "Không cồn",
-];
-
-// ─── Map icon name to Lucide icon ──────────────────
-function renderIcon(iconName: string | null, className: string) {
-  switch (iconName?.toLowerCase()) {
-    case "factory":
-      return <Factory size={34} className={className} />;
-    case "shield":
-      return <ShieldCheck size={34} className={className} />;
-    case "check":
-      return <CheckCircle2 size={34} className={className} />;
-    default:
-      return <Leaf size={34} className={className} />;
-  }
-}
 
 // ─── Sub-component: Certificate Card ──────────────
 interface CertData {
@@ -75,9 +7,6 @@ interface CertData {
   title: string;
   description: string | null;
   image_url: string | null;
-  icon?: string;
-  iconBg: string;
-  iconColor: string;
   cardBorder: string;
   cardGlow: string;
   accent: string;
@@ -89,9 +18,6 @@ function CertCard({ cert }: { cert: CertData }) {
     title,
     description,
     image_url,
-    icon,
-    iconBg,
-    iconColor,
     cardBorder,
     cardGlow,
   } = cert;
@@ -116,20 +42,16 @@ function CertCard({ cert }: { cert: CertData }) {
         className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/60"
       />
 
-      {/* Icon or Image disc */}
-      <div
-        className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full ${iconBg} shadow-sm ring-4 ring-white`}
-      >
-        {image_url ? (
+      {image_url && (
+        <div className="mb-6 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm ring-4 ring-white">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image_url}
             alt={title}
             className="h-full w-full object-contain"
           />
-        ) : (
-          renderIcon(icon || "leaf", iconColor)
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Title */}
       <h3 className="mb-1 text-xl font-bold tracking-tight text-[#2D3748]">
@@ -158,28 +80,19 @@ function TrustBadge({ label }: { label: string }) {
 
 // ─── Main Server Component ─────────────────────────
 export default async function QualityCertificates() {
-  // Fetch certificates and header config from database
   const [dbCertificates, headerConfig] = await Promise.all([
     getCertificates(),
     getCertificatesHeader(),
   ]);
 
-  // Use DB data if available, otherwise fallback to defaults
-  const certificates =
-    dbCertificates && dbCertificates.length > 0
-      ? dbCertificates.map((cert) => ({
-          ...cert,
-          icon: "leaf", // default icon
-          iconBg: "bg-[#DCFCE7]",
-          iconColor: "text-[#16A34A]",
-          cardBorder: "border-[#BBF7D0]",
-          cardGlow: "hover:shadow-[0_20px_48px_rgba(22,163,74,0.12)]",
-          accent: "text-[#15803D]",
-        }))
-      : DEFAULT_CERTIFICATES;
-
-  // Get dynamic tags from header config or use defaults
-  const trustBadges = headerConfig.bottomTags || DEFAULT_TRUST_BADGES;
+  if (dbCertificates.length === 0) return null;
+  const certificates = dbCertificates.map((cert) => ({
+    ...cert,
+    cardBorder: "border-[#BBF7D0]",
+    cardGlow: "hover:shadow-[0_20px_48px_rgba(22,163,74,0.12)]",
+    accent: "text-[#15803D]",
+  }));
+  const trustBadges = headerConfig?.bottomTags ?? [];
 
   return (
     <section id="certificates" className="relative overflow-hidden py-20 md:py-28">
@@ -224,23 +137,26 @@ export default async function QualityCertificates() {
 
       <div className="relative mx-auto max-w-[1200px] px-5">
         {/* Section Header */}
-        <div className="mb-14 text-center">
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#BBF7D0] bg-white/80 px-4 py-1.5 text-[13px] font-bold uppercase tracking-wider text-[#16A34A] shadow-sm backdrop-blur-sm">
-            <CheckCircle2 size={13} strokeWidth={2.5} />
-            {headerConfig.badge}
-          </span>
-
-          <h2 className="mx-auto mb-4 max-w-xl text-3xl font-bold leading-tight text-[#2D3748] md:text-4xl">
-            {headerConfig.title.split(" ").slice(0, -1).join(" ")}{" "}
-            <span className="bg-gradient-to-r from-[#5D8D4A] to-[#22C55E] bg-clip-text text-transparent">
-              {headerConfig.title.split(" ").slice(-1)}
-            </span>
-          </h2>
-
-          <p className="mx-auto max-w-2xl text-base leading-7 text-[#64748B] md:text-lg">
-            {headerConfig.description}
-          </p>
-        </div>
+        {(headerConfig?.badge || headerConfig?.title || headerConfig?.description) && (
+          <div className="mb-14 text-center">
+            {headerConfig.badge && (
+              <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#BBF7D0] bg-white/80 px-4 py-1.5 text-[13px] font-bold uppercase tracking-wider text-[#16A34A] shadow-sm backdrop-blur-sm">
+                <CheckCircle2 size={13} strokeWidth={2.5} />
+                {headerConfig.badge}
+              </span>
+            )}
+            {headerConfig.title && (
+              <h2 className="mx-auto mb-4 max-w-xl text-3xl font-bold leading-tight text-[#2D3748] md:text-4xl">
+                {headerConfig.title}
+              </h2>
+            )}
+            {headerConfig.description && (
+              <p className="mx-auto max-w-2xl text-base leading-7 text-[#64748B] md:text-lg">
+                {headerConfig.description}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Certificate Cards */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-7">
@@ -250,11 +166,13 @@ export default async function QualityCertificates() {
         </div>
 
         {/* Trust Badges */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-          {trustBadges.map((badge) => (
-            <TrustBadge key={badge} label={badge} />
-          ))}
-        </div>
+        {trustBadges.length > 0 && (
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
+            {trustBadges.map((badge) => (
+              <TrustBadge key={badge} label={badge} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

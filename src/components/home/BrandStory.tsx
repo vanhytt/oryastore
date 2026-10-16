@@ -1,110 +1,106 @@
-import React from "react";
-import { CircleCheck, Award, Heart, Shield } from "lucide-react";
-import { getBrandStory } from "@/src/lib/getBrandStory";
+import Link from "next/link";
+import {
+  Award,
+  CheckCircle2,
+  Heart,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
+import { getHomeBrandStory } from "@/src/lib/getHomeBrandStory";
 
-// Force dynamic rendering for real-time data
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const highlights = [
-  {
-    icon: <Heart size={20} className="text-[#ED9717]" />,
-    title: "Ra đời từ tình yêu thương",
-    description:
-      "Orya được sáng lập bởi các chuyên gia dược học và những người mẹ đam mê chăm sóc sức khỏe gia đình.",
-  },
-  {
-    icon: <Shield size={20} className="text-[#ED9717]" />,
-    title: "An toàn tuyệt đối",
-    description:
-      "Không chứa hóa chất độc hại, không SLS, không Paraben. Phù hợp với da nhạy cảm của mẹ bầu và trẻ sơ sinh.",
-  },
-  {
-    icon: <Award size={20} className="text-[#ED9717]" />,
-    title: "Chứng nhận quốc tế",
-    description:
-      "Đạt chứng nhận Vegan, tiêu chuẩn CGMP-ASEAN và nhiều chứng nhận quốc tế khác về chất lượng mỹ phẩm.",
-  },
-  {
-    icon: <CircleCheck size={20} className="text-[#ED9717]" />,
-    title: "Được nghiên cứu lâm sàng",
-    description:
-      "Qua kiểm nghiệm lâm sàng tại các bệnh viện lớn, đảm bảo hiệu quả và an toàn với tỷ lệ hài lòng 98,5%.",
-  },
-];
-
-const stats = [
-  { value: "1M+", label: "Mẹ tin dùng" },
-  { value: "10+", label: "Năm kinh nghiệm" },
-  { value: "50+", label: "Sản phẩm" },
-  { value: "98%", label: "Hài lòng" },
-];
+const featureIcons: Record<string, LucideIcon> = {
+  heart: Heart,
+  "shield-check": ShieldCheck,
+  award: Award,
+  "circle-check": CheckCircle2,
+};
 
 export default async function BrandStory() {
-  const brandStory = await getBrandStory();
+  const story = await getHomeBrandStory();
 
   return (
-    <section className="py-16 md:py-20 bg-gradient-to-br from-[#F0F8FF] to-white overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-5">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left - Visual */}
-          <div className="relative order-2 lg:order-1">
-            <div className="relative">
-              <div className="w-full h-[420px] rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(36,85,143,0.15)]">
-                <img
-                  src={brandStory.hero.mainImage}
-                  alt="Về Orya"
-                  className="w-full h-full object-cover block"
-                />
-              </div>
-
-              {/* Stats overlay */}
-              <div className="absolute -bottom-6 left-4 right-4 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4">
-                <div className="grid grid-cols-4 gap-2">
-                  {stats.map((stat) => (
-                    <div key={stat.label} className="text-center">
-                      <p className="text-[#5D8D4A] font-bold text-xl md:text-2xl">{stat.value}</p>
-                      <p className="text-[#404041] text-xs mt-1">{stat.label}</p>
+    <section className="bg-gradient-to-br from-emerald-50/30 via-white to-green-50/20 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl border border-gray-100/80 shadow-xl lg:aspect-square">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={story.image_url}
+                alt={story.title}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute bottom-4 left-4 right-4 grid grid-cols-2 gap-2 rounded-2xl border border-white/60 bg-white/95 p-4 text-center shadow-lg backdrop-blur-md sm:grid-cols-4">
+                {story.stats.map((stat, index) => (
+                  <div key={`${stat.label}-${index}`}>
+                    <div className="text-lg font-bold text-[#2F5227] md:text-xl">
+                      {stat.value}
                     </div>
-                  ))}
-                </div>
+                    <div className="text-[11px] font-medium text-gray-500 md:text-xs">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Right - Content */}
-          <div className="order-1 lg:order-2">
-            <span className="inline-block px-4 py-1.5 bg-[#ED9717]/10 text-[#ED9717] text-sm font-bold rounded-full mb-4">
-              Câu chuyện thương hiệu
-            </span>
-            <h2 className="text-[#5D8D4A] font-bold text-3xl md:text-4xl leading-tight mb-5">
-              {brandStory.hero.mainHeading}
+          <div className="lg:col-span-7">
+            <h2 className="mb-4 text-2xl font-bold leading-snug text-[#2F5227] md:text-3xl lg:text-4xl">
+              {story.title}
             </h2>
-            <p className="text-[#404041] text-base md:text-lg leading-7 mb-8">
-              {brandStory.hero.description1}
+            <p className="mb-6 whitespace-pre-line text-sm leading-relaxed text-gray-600 md:text-base">
+              {story.description}
             </p>
 
-            {/* Highlights */}
-            <div className="space-y-5">
-              {highlights.map((item) => (
-                <div key={item.title} className="flex gap-4">
-                  <div className="w-10 h-10 bg-[#ED9717]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    {item.icon}
+            <div className="mb-8 space-y-4">
+              {story.features.map((feature, index) => {
+                const IconComponent =
+                  featureIcons[feature.icon] ?? CheckCircle2;
+
+                return (
+                  <div
+                    key={`${feature.title}-${index}`}
+                    className="flex items-start gap-3"
+                  >
+                    <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+                      <IconComponent size={20} strokeWidth={1.5} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="mb-0.5 text-sm font-bold text-[#2F5227] md:text-base">
+                        {feature.title}
+                      </h3>
+                      <p className="whitespace-pre-line text-xs leading-relaxed text-gray-500 md:text-sm">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-[#5D8D4A] font-bold text-base mb-1">{item.title}</h3>
-                    <p className="text-[#404041] text-sm leading-6">{item.description}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            <a
-              href="/thuong-hieu"
-              className="inline-flex items-center gap-2 mt-8 bg-[#5D8D4A] text-white font-bold px-6 py-3 hover:bg-[#6CA356] transition-colors min-h-[44px]"
+            <Link
+              href={story.cta_link}
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-[#5D8D4A] px-6 py-3 font-medium text-white shadow-md shadow-[#5D8D4A]/20 transition-all hover:-translate-y-0.5 hover:bg-[#4B733B]"
             >
-              Tìm hiểu thêm về Orya
-            </a>
+              {story.cta_text}
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>

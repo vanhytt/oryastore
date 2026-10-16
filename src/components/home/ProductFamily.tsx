@@ -10,6 +10,8 @@ interface ProductFamilyProps {
 }
 
 export default function ProductFamily({ products = [] }: ProductFamilyProps) {
+  if (products.length === 0) return null;
+
   return (
     <section className="py-16 md:py-20 bg-white">
       <div className="max-w-[1200px] mx-auto px-5">

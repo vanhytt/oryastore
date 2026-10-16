@@ -82,6 +82,10 @@ export async function PUT(req: NextRequest) {
   try {
     revalidatePath("/");
     revalidatePath("/admin");
+    revalidatePath("/thuong-hieu");
+    revalidatePath("/san-pham");
+    revalidatePath("/products");
+    revalidatePath("/tin-tuc");
   } catch (revalidateError) {
     console.warn("Revalidation warning:", revalidateError);
     // Continue even if revalidation fails

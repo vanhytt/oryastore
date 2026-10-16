@@ -3,20 +3,23 @@
 import React, { useState, useEffect } from "react";
 
 export default function HeroBanner() {
-  const [bannerUrl, setBannerUrl] = useState<string>("/banner.jpg"); // Default banner
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
 
   useEffect(() => {
     // Fetch banner from API
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
-        if (data.hero_banner) setBannerUrl(data.hero_banner);
+        if (typeof data.hero_banner === "string" && data.hero_banner.trim()) {
+          setBannerUrl(data.hero_banner);
+        }
       })
       .catch((err) => {
         console.error("Error fetching banner:", err);
-        // Keep default banner on error
       });
   }, []);
+
+  if (!bannerUrl) return null;
 
   return (
     <section className="w-full relative overflow-hidden bg-white">

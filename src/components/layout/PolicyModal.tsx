@@ -10,9 +10,6 @@ interface Policy {
   content?: string;
 }
 
-const fallbackText =
-  "Nội dung chính sách đang được cập nhật. Vui lòng liên hệ Orya để được hỗ trợ.";
-
 export default function PolicyModal({ policies }: { policies: Policy[] }) {
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -87,7 +84,7 @@ export default function PolicyModal({ policies }: { policies: Policy[] }) {
               </button>
             </div>
             <p className="whitespace-pre-line px-6 py-5 text-sm leading-7 text-gray-700">
-              {selectedPolicy.content || fallbackText}
+              {selectedPolicy.content}
             </p>
           </section>
         </div>

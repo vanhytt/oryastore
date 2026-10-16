@@ -1,71 +1,19 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { Star, ArrowUpDown, Filter, ChevronRight, Home, Eye, ShoppingCart, Info } from "lucide-react";
-import Header from "@/src/components/layout/Header";
-import Footer from "@/src/components/layout/Footer";
 import { normalizeCartPrice, resolveCartImage, useCart } from "@/src/lib/cartContext";
-import { getActiveProducts } from "@/src/lib/dbService";
 import type { Product } from "@/src/lib/dbService";
-
-// Product image placeholder component
-function ProductImagePlaceholder({ name }: { name: string }) {
-  const colors = [
-    "from-[#5D8D4A] to-[#4A7A38]",
-    "from-[#F6ABB4] to-[#e8899a]",
-    "from-[#5CC9FF] to-[#3ab5ed]",
-    "from-[#ED9717] to-[#c07a0e]",
-  ];
-  const colorIndex = Math.abs(name.length % colors.length);
-
-  return (
-    <div className={`w-full h-64 bg-gradient-to-b ${colors[colorIndex]} flex items-center justify-center transition-transform duration-500 group-hover:scale-105`}>
-      <div className="text-center text-white px-4">
-        <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-          <span className="text-[#5D8D4A] font-bold text-2xl">O</span>
-        </div>
-        <p className="text-base font-bold leading-tight max-w-[200px] mx-auto">{name}</p>
-        <span className="inline-block mt-2 text-xs bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">Orya Natural</span>
-      </div>
-    </div>
-  );
-}
 
 interface ProductsPageClientProps {
   initialProducts: Product[];
 }
 
 export default function ProductsPageClient({ initialProducts }: ProductsPageClientProps) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("default");
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadProducts = async () => {
-      try {
-        const data = await getActiveProducts();
-        if (isMounted) {
-          setProducts(data);
-        }
-      } catch (error) {
-        console.error("Failed to load products", error);
-      }
-    };
-
-    loadProducts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    setProducts(initialProducts);
-  }, [initialProducts]);
 
   const getNumericPrice = (priceStr: string | undefined) => {
     if (!priceStr) return 0;
@@ -74,7 +22,7 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
   };
 
   const processedProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...initialProducts];
 
     if (selectedCategory !== "all") {
       result = result.filter((p) => {
@@ -92,7 +40,7 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
     }
 
     return result;
-  }, [products, selectedCategory, sortBy]);
+  }, [initialProducts, selectedCategory, sortBy]);
 
   const categories = [
     { id: "all", label: "Tất cả sản phẩm" },
@@ -107,11 +55,7 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
       maximumFractionDigits: 0,
     }).format(value || 0);
 
-  const loading = products.length === 0;
-
   return (
-    <>
-      <Header />
       <main className="flex-1">
         <div className="bg-[#FAFDF9] min-h-screen pb-20">
           <div className="bg-[#EFFFE9] border-b border-[#5D8D4A]/10 py-4">
@@ -188,15 +132,15 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
               Hiển thị <span className="text-[#5D8D4A]">{processedProducts.length}</span> sản phẩm
             </div>
 
-            {loading ? (
-              <div className="bg-white rounded-2xl border border-[#5D8D4A]/10 py-20 text-center text-[#5D8D4A] font-semibold">
-                Đang tải sản phẩm từ Supabase...
-              </div>
-            ) : processedProducts.length === 0 ? (
+            {processedProducts.length === 0 ? (
               <div className="bg-white rounded-2xl border border-dashed border-[#5D8D4A]/20 py-20 text-center">
                 <Info size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-[#404041] mb-2">Không tìm thấy sản phẩm</h3>
-                <p className="text-[#404041]/60 text-sm">Vui lòng chọn danh mục khác.</p>
+                <h3 className="text-lg font-bold text-[#404041] mb-2">Chưa có sản phẩm</h3>
+                <p className="text-[#404041]/60 text-sm">
+                  {initialProducts.length === 0
+                    ? "Hiện chưa có sản phẩm nào đang được mở bán."
+                    : "Vui lòng chọn danh mục khác."}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -231,7 +175,7 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
                             className="w-full h-64 object-contain bg-white"
                           />
                         ) : (
-                          <ProductImagePlaceholder name={product.name} />
+                          <div aria-hidden className="h-64 w-full bg-gray-50" />
                         )}
 
                         <div className="absolute inset-0 bg-[#5D8D4A]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
@@ -265,7 +209,9 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
                               />
                             ))}
                           </div>
-                          <span className="text-xs text-[#404041]/60 font-medium">({product.rating?.toFixed(1) || "0.0"})</span>
+                          {product.rating > 0 && (
+                            <span className="text-xs text-[#404041]/60 font-medium">({product.rating.toFixed(1)})</span>
+                          )}
                         </div>
 
                         <p className="text-[#404041]/70 text-xs md:text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
@@ -336,7 +282,5 @@ export default function ProductsPageClient({ initialProducts }: ProductsPageClie
           </div>
         </div>
       </main>
-      <Footer />
-    </>
   );
 }

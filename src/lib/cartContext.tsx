@@ -13,10 +13,8 @@ export interface CartItem {
   slug?: string;
 }
 
-export const DEFAULT_CART_IMAGE = "https://placehold.co/600x600/efffe9/5d8d4a?text=Orya+Natural";
-
 export function resolveCartImage(image?: string | null): string {
-  return image && image.trim() ? image : DEFAULT_CART_IMAGE;
+  return image?.trim() ?? "";
 }
 
 export function normalizeCartPrice(value: number | string | undefined): number {
@@ -65,8 +63,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       try {
         const parsedCart = JSON.parse(savedCart) as Array<Partial<CartItem> & { priceValue?: number; price?: number | string }>;
         const normalizedCart = parsedCart.map((item) => ({
-          id: String(item.id || ""),
-          name: item.name || "Sản phẩm Orya",
+          id: String(item.id ?? ""),
+          name: item.name ?? "",
           price: typeof item.price === "number" ? item.price : normalizeCartPrice((item as any).priceValue ?? item.price),
           image: resolveCartImage(item.image),
           quantity: Number(item.quantity) || 1,
@@ -111,7 +109,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         ...prevCart,
         {
           id: String(product.id),
-          name: product.name || "Sản phẩm Orya",
+          name: product.name,
           price: normalizeCartPrice(product.price),
           image: resolveCartImage(product.image),
           quantity,

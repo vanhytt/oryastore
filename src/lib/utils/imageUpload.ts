@@ -78,8 +78,7 @@ export async function uploadBrandImage(
 }
 
 export function getImagePreviewUrl(url: string): string {
-  if (url.startsWith("http")) return url;
-  return url || "/placeholder.jpg";
+  return url;
 }
 
 export function validateImageUrl(url: string): boolean {
@@ -87,6 +86,6 @@ export function validateImageUrl(url: string): boolean {
     new URL(url);
     return true;
   } catch {
-    return url === "" || url === "/placeholder.jpg";
+    return url === "";
   }
 }

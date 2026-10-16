@@ -13,28 +13,6 @@ interface ProductCardProps {
   onAddToCart?: (product: Product) => void;
 }
 
-// Product image placeholder component
-function ProductImagePlaceholder({ name, slug }: { name: string; slug?: string }) {
-  const colors = [
-    "from-[#5D8D4A] to-[#4A7A38]",
-    "from-[#F6ABB4] to-[#e8899a]",
-    "from-[#5CC9FF] to-[#3ab5ed]",
-    "from-[#ED9717] to-[#c07a0e]",
-  ];
-  const colorIndex = (slug || name).length % colors.length;
-
-  return (
-    <div className={`w-full h-56 bg-gradient-to-b ${colors[colorIndex]} flex items-center justify-center`}>
-      <div className="text-center text-white px-4">
-        <div className="w-12 h-12 bg-white rounded-full mx-auto mb-3 flex items-center justify-center">
-          <span className="text-[#5D8D4A] font-bold text-lg">O</span>
-        </div>
-        <p className="text-sm font-bold leading-tight">{name.split(" ").slice(0, 3).join(" ")}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function ProductCard({
   product,
   onAddToCart,
@@ -92,16 +70,18 @@ export default function ProductCard({
             className="w-full h-56 object-contain transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <ProductImagePlaceholder name={product.name} slug={product.slug} />
+          <div aria-hidden className="h-56 w-full bg-gray-50" />
         )}
       </Link>
 
       {/* Product Info */}
       <div className="p-5 flex flex-col flex-1">
         {/* Brand */}
-        <span className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">
-          {product.brand || "Orya Babycare"}
-        </span>
+        {product.brand && (
+          <span className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">
+            {product.brand}
+          </span>
+        )}
 
         <Link href={productLink}>
           <h3 className="text-[#5D8D4A] font-bold text-lg leading-[25.2px] mb-2 line-clamp-2 hover:underline cursor-pointer">
